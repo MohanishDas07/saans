@@ -31,6 +31,8 @@ export const Footer: React.FC = () => {
               <li><Link href="/onboarding" className="hover:underline">Household Profile Setup</Link></li>
               <li><Link href="/your-day" className="hover:underline">Your Day Timeline & Budget</Link></li>
               <li><Link href="/simulate" className="hover:underline">What-If Intervention Simulator</Link></li>
+              <li><Link href="/chat" className="hover:underline">Ask Saans (AI Assistant)</Link></li>
+              <li><Link href="/lab" className="hover:underline">Home Air Lab & Purifier Sizing</Link></li>
               <li><Link href="/community" className="hover:underline">Community & School Advisory Card</Link></li>
               <li><Link href="/how-saans-works" className="hover:underline">Formulas & Privacy Model</Link></li>
             </ul>

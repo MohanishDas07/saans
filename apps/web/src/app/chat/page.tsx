@@ -1,0 +1,308 @@
+"use client";
+
+import React, { useState, useEffect, useRef } from "react";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { sendChatSync, ChatCitation } from "@/lib/api";
+
+interface Message {
+  id: string;
+  sender: "user" | "assistant";
+  text: string;
+  isEmergency?: boolean;
+  citations?: ChatCitation[];
+  timestamp: string;
+}
+
+export default function ChatPage() {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: "intro",
+      sender: "assistant",
+      text: "Namaste. I am Saans, your winter smog and clean air assistant. I use deterministic exposure equations and peer-reviewed air research to advise on routines, indoor air quality hacks, and mask usage. Ask me anything, or pick a prompt below.",
+      citations: [
+        {
+          id: "cpcb-naqi-bands",
+          title: "National Air Quality Index",
+          publisher: "Central Pollution Control Board",
+        },
+      ],
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    },
+  ]);
+
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [simplifyForChild, setSimplifyForChild] = useState(false);
+  const [lang, setLang] = useState<"en" | "hi" | "mr">("en");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const savedLang = (localStorage.getItem("saans_lang") as "en" | "hi" | "mr") || "en";
+    setLang(savedLang);
+
+    const onLangChange = () => {
+      const current = (localStorage.getItem("saans_lang") as "en" | "hi" | "mr") || "en";
+      setLang(current);
+    };
+    window.addEventListener("saans_lang_changed", onLangChange);
+    return () => window.removeEventListener("saans_lang_changed", onLangChange);
+  }, []);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
+
+  const quickPrompts = [
+    {
+      label: lang === "hi" ? "पौधों का भ्रम" : lang === "mr" ? "झाडांचा गैरसमज" : "Do plants clean smog?",
+      query:
+        lang === "hi"
+          ? "क्या घर में पौधे लगाने से PM2.5 प्रदूषण कम होता है?"
+          : lang === "mr"
+          ? "घरातील झाडे हवेतील धूर स्वच्छ करू शकतात का?"
+          : "Do indoor snake plants actually filter PM2.5 smog?",
+    },
+    {
+      label: lang === "hi" ? "गुड़ का सच" : lang === "mr" ? "गूळ गैरसमज" : "Can jaggery detox lungs?",
+      query:
+        lang === "hi"
+          ? "क्या गुड़ खाने से फेफड़ों का प्रदूषण साफ होता है?"
+          : "Does eating jaggery (gur) clean inhaled particulate matter from lungs?",
+    },
+    {
+      label: lang === "hi" ? "N95 बनाम कपड़ा" : lang === "mr" ? "N95 विरुद्ध कापड" : "N95 vs cloth mask",
+      query: "Why are cloth masks and handkerchiefs ineffective against PM2.5 compared to N95?",
+    },
+    {
+      label: lang === "hi" ? "प्यूरीफायर साइज" : lang === "mr" ? "प्युरिफायर क्षमता" : "Purifier sizing",
+      query: "How do I calculate the required CADR for an 12x10 ft bedroom?",
+    },
+    {
+      label: lang === "hi" ? "सैर का समय" : lang === "mr" ? "व्यायामाची वेळ" : "Best walk time",
+      query: "When is the lowest exposure window for a morning walk in Ghaziabad?",
+    },
+    {
+      label: lang === "hi" ? "DIY प्यूरीफायर" : lang === "mr" ? "DIY प्युरिफायर" : "DIY Corsi-Rosenthal",
+      query: "How do I build a DIY Corsi-Rosenthal box air purifier?",
+    },
+  ];
+
+  const handleSend = async (queryText?: string) => {
+    const textToSend = (queryText || input).trim();
+    if (!textToSend || loading) return;
+
+    const userMsg: Message = {
+      id: "u_" + Date.now(),
+      sender: "user",
+      text: textToSend,
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    };
+
+    setMessages((prev) => [...prev, userMsg]);
+    setInput("");
+    setLoading(true);
+
+    try {
+      // Get household profile from localStorage if present
+      let profile = null;
+      try {
+        const raw = localStorage.getItem("saans_household_profile");
+        if (raw) profile = JSON.parse(raw);
+      } catch {}
+
+      const res = await sendChatSync(textToSend, profile, lang, simplifyForChild);
+
+      const botMsg: Message = {
+        id: "b_" + Date.now(),
+        sender: "assistant",
+        text: res.reply,
+        isEmergency: res.is_medical_refusal,
+        citations: res.citations,
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      };
+
+      setMessages((prev) => [...prev, botMsg]);
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: "err_" + Date.now(),
+          sender: "assistant",
+          text: "I encountered a communication error with the exposure engine. Please check your connection and try again.",
+          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-paper flex flex-col font-sans text-ink">
+      <Header />
+
+      <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-8 flex flex-col">
+        {/* Page Header */}
+        <div className="border-b hairline border-rule pb-4 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <span className="font-mono text-xs uppercase tracking-wider text-ink-muted">
+                {lang === "hi" ? "आर्टिफिशियल इंटेलिजेंस सहायक" : lang === "mr" ? "कृत्रिम बुद्धिमत्ता सहाय्यक" : "GENAI AIR ASSISTANT"}
+              </span>
+              <h1 className="font-serif text-3xl font-bold mt-1">
+                {lang === "hi" ? "साँस से पूछें (Ask Saans)" : lang === "mr" ? "साँसला विचारा" : "Ask Saans"}
+              </h1>
+              <p className="text-sm text-ink-muted mt-1 max-w-2xl">
+                {lang === "hi"
+                  ? "हवा विज्ञान, N95 मास्क, ट्रू HEPA प्यूरीफायर और दिनचर्या पर सवाल पूछें। संख्याएं केवल गणितीय इंजन से आती हैं।"
+                  : "Grounded in our deterministic exposure engine and peer-reviewed air science. The LLM never hallucinates numbers."}
+              </p>
+            </div>
+
+            {/* Child Mode Switch */}
+            <div className="flex items-center space-x-2 bg-surface border hairline border-rule p-2 rounded">
+              <input
+                type="checkbox"
+                id="child-toggle"
+                checked={simplifyForChild}
+                onChange={(e) => setSimplifyForChild(e.target.checked)}
+                className="cursor-pointer accent-ink"
+              />
+              <label htmlFor="child-toggle" className="text-xs font-mono text-ink cursor-pointer select-none">
+                {lang === "hi"
+                  ? "१० वर्षीय बच्चे के लिए सरल समझाएं"
+                  : lang === "mr"
+                  ? "१० वर्षांच्या मुलासाठी सोपे करा"
+                  : "Explain to 10-year-old"}
+              </label>
+            </div>
+          </div>
+
+          {/* Non-negotiable Medical Triage Notice */}
+          <div className="mt-3 bg-surface border-l-4 border-ink p-2.5 text-xs text-ink-muted font-mono">
+            <strong>SAFETY PROTOCOL:</strong> Saans does not provide medical advice. Symptoms of acute distress (chest pain, wheezing in a child, acute breathlessness) trigger immediate static emergency triage instructions (dial 112 / 102).
+          </div>
+        </div>
+
+        {/* Quick Prompts Bar */}
+        <div className="mb-4">
+          <div className="font-mono text-xs text-ink-muted mb-2">QUICK SCIENCE QUERIES:</div>
+          <div className="flex flex-wrap gap-2">
+            {quickPrompts.map((p, idx) => (
+              <button
+                key={idx}
+                onClick={() => handleSend(p.query)}
+                disabled={loading}
+                className="px-3 py-1 bg-surface border hairline border-rule hover:bg-paper hover:border-ink text-xs font-medium text-ink transition-colors disabled:opacity-50"
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Chat Message Window */}
+        <div className="flex-1 bg-surface border hairline border-rule p-4 overflow-y-auto min-h-[380px] max-h-[520px] flex flex-col space-y-4 mb-4 rounded-none">
+          {messages.map((m) => (
+            <div
+              key={m.id}
+              className={`flex flex-col ${m.sender === "user" ? "items-end" : "items-start"}`}
+            >
+              <div
+                className={`max-w-[85%] p-3.5 border text-sm ${
+                  m.sender === "user"
+                    ? "bg-ink text-paper border-ink"
+                    : m.isEmergency
+                    ? "bg-[#FDF0F2] text-[#7A0F2E] border-[#7A0F2E] font-medium"
+                    : "bg-paper text-ink border-rule"
+                }`}
+              >
+                {/* Emergency Badge */}
+                {m.isEmergency && (
+                  <div className="flex items-center space-x-1.5 text-xs uppercase font-mono font-bold tracking-wider text-[#7A0F2E] mb-2 pb-1 border-b border-[#7A0F2E]">
+                    <span>⚠️ EMERGENCY MEDICAL TRIAGE REFUSAL</span>
+                  </div>
+                )}
+
+                {/* Message Body */}
+                <p className="whitespace-pre-wrap leading-relaxed">{m.text}</p>
+
+                {/* Citations Box */}
+                {m.citations && m.citations.length > 0 && (
+                  <div className="mt-3 pt-2 border-t hairline border-rule/50 text-xs font-mono">
+                    <span className="text-ink-muted uppercase tracking-wider block mb-1">
+                      VERIFIED PEER-REVIEWED SOURCES:
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {m.citations.map((c, i) => (
+                        <span
+                          key={i}
+                          className="inline-flex items-center px-2 py-0.5 bg-surface border border-rule text-ink-muted text-[11px]"
+                          title={`${c.title} — ${c.publisher}`}
+                        >
+                          [{c.id}] {c.publisher}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <span className="text-[10px] font-mono text-ink-muted mt-1 px-1">
+                {m.sender === "user" ? "You" : "Saans"} • {m.timestamp}
+              </span>
+            </div>
+          ))}
+
+          {loading && (
+            <div className="flex items-start">
+              <div className="p-3 bg-paper border hairline border-rule text-sm text-ink-muted font-mono flex items-center space-x-2">
+                <span className="inline-block w-2 h-2 bg-ink animate-pulse"></span>
+                <span>Calculating exposure & retrieving verified chunks...</span>
+              </div>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Chat Input Bar */}
+        <div className="border border-rule bg-surface p-2 flex items-center gap-2">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={
+              lang === "hi"
+                ? "प्रदूषण, N95 मास्क, या प्यूरीफायर पर सवाल पूछें..."
+                : lang === "mr"
+                ? "हवेची गुणवत्ता किंवा उपायांबद्दल विचारा..."
+                : "Ask about winter smog, N95 masks, purifier sizing, or routine optimization..."
+            }
+            disabled={loading}
+            className="flex-1 bg-paper border border-rule px-3 py-2 text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:border-ink font-sans"
+          />
+
+          <button
+            onClick={() => handleSend()}
+            disabled={loading || !input.trim()}
+            className="px-5 py-2 bg-ink text-paper text-sm font-semibold hover:bg-ink-muted transition-colors disabled:opacity-50 font-mono uppercase"
+          >
+            {loading ? "..." : lang === "hi" ? "भेजें" : lang === "mr" ? "पाठवा" : "Send"}
+          </button>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}

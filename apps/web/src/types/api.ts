@@ -208,3 +208,24 @@ export interface CommunityAdvisoryResponse {
   verification_source: string;
   generated_at_iso: string;
 }
+
+
+export interface ChatCitation {
+  id: string;
+  title: string;
+  publisher: string;
+}
+
+export interface ChatRequest {
+  message: string;
+  profile?: HouseholdProfile | null;
+  language?: "en" | "hi" | "mr";
+  simplify_for_child?: boolean;
+}
+
+export interface ChatSyncResponse {
+  reply: string;
+  is_medical_refusal: boolean;
+  citations: ChatCitation[];
+  language: string;
+}

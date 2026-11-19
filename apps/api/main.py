@@ -8,7 +8,7 @@ import sys
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import air, community, geocode, health, plan, simulate
+from routers import air, chat, community, geocode, health, plan, simulate
 
 # Structured Logging - Strict Rule: NO personal health data in logs
 logging.basicConfig(
@@ -79,6 +79,7 @@ app.include_router(air.router, prefix="/api/v1")
 app.include_router(plan.router, prefix="/api/v1")
 app.include_router(simulate.router, prefix="/api/v1")
 app.include_router(community.router, prefix="/api/v1")
+app.include_router(chat.router, prefix="/api/v1")
 
 
 @app.get("/")

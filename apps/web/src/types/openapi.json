@@ -287,6 +287,88 @@
         }
       }
     },
+    "/api/v1/chat": {
+      "post": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Chat Stream Endpoint",
+        "description": "Server-Sent Events (SSE) streaming endpoint for Ask Saans.\nEmits token chunks, executed tool summaries, and citations in real time.",
+        "operationId": "chat_stream_endpoint_api_v1_chat_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/chat/sync": {
+      "post": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Chat Sync Endpoint",
+        "description": "Synchronous fallback endpoint returning the complete grounded reply and citations.",
+        "operationId": "chat_sync_endpoint_api_v1_chat_sync_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatSyncResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/": {
       "get": {
         "summary": "Root",
@@ -517,6 +599,100 @@
           "hourly_forecast"
         ],
         "title": "AirQualityResponse"
+      },
+      "ChatRequest": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Message"
+          },
+          "profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HouseholdProfile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "hi",
+              "mr"
+            ],
+            "title": "Language",
+            "default": "en"
+          },
+          "simplify_for_child": {
+            "type": "boolean",
+            "title": "Simplify For Child",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "ChatRequest"
+      },
+      "ChatSyncResponse": {
+        "properties": {
+          "reply": {
+            "type": "string",
+            "title": "Reply"
+          },
+          "is_medical_refusal": {
+            "type": "boolean",
+            "title": "Is Medical Refusal"
+          },
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/CitationItem"
+            },
+            "type": "array",
+            "title": "Citations"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reply",
+          "is_medical_refusal",
+          "citations",
+          "language"
+        ],
+        "title": "ChatSyncResponse"
+      },
+      "CitationItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "publisher": {
+            "type": "string",
+            "title": "Publisher"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "publisher"
+        ],
+        "title": "CitationItem"
       },
       "CommunityAdvisoryRequest": {
         "properties": {

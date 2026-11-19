@@ -41,9 +41,10 @@ export const Header: React.FC = () => {
 
   const navLinks = [
     { href: "/", labelEn: "Today's Air", labelHi: "आज की हवा", labelMr: "आजची हवा" },
-    { href: "/onboarding", labelEn: "Household", labelHi: "परिवार", labelMr: "कुटुंब" },
     { href: "/your-day", labelEn: "Your Day", labelHi: "दिनचर्या", labelMr: "दिनचर्या" },
     { href: "/simulate", labelEn: "What-If Simulator", labelHi: "सिमुलेटर", labelMr: "सिम्युलेटर" },
+    { href: "/chat", labelEn: "Ask Saans", labelHi: "साँस से पूछें", labelMr: "साँसला विचारा" },
+    { href: "/lab", labelEn: "Home Air Lab", labelHi: "होम एयर लैब", labelMr: "होम एअर लॅब" },
     { href: "/community", labelEn: "Community Card", labelHi: "समुदाय कार्ड", labelMr: "समुदाय कार्ड" },
     { href: "/how-saans-works", labelEn: "How It Works", labelHi: "पारदर्शिता", labelMr: "पारदर्शकता" },
   ];

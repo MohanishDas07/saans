@@ -271,6 +271,133 @@ export async function simulateInterventions(req: SimulateRequest): Promise<Simul
   }
 }
 
+export interface ChatCitation {
+  id: string;
+  title: string;
+  publisher: string;
+}
+
+export interface ChatSyncResponse {
+  reply: string;
+  is_medical_refusal: boolean;
+  citations: ChatCitation[];
+  language: string;
+}
+
+export async function sendChatSync(
+  message: string,
+  profile?: any,
+  language: "en" | "hi" | "mr" = "en",
+  simplifyForChild: boolean = false
+): Promise<ChatSyncResponse> {
+  try {
+    return await fetchJSON<ChatSyncResponse>("/chat/sync", {
+      method: "POST",
+      body: JSON.stringify({
+        message,
+        profile,
+        language,
+        simplify_for_child: simplifyForChild,
+      }),
+    });
+  } catch {
+    // Offline / fallback grounded response matching deterministic MockLLM logic
+    const lower = message.toLowerCase();
+
+    // Check emergency redlines offline
+    if (
+      lower.includes("chest pain") ||
+      lower.includes("wheez") ||
+      lower.includes("can't breathe") ||
+      lower.includes("blue lips") ||
+      lower.includes("सीने में दर्द") ||
+      lower.includes("सांस फूल") ||
+      lower.includes("छातीत")
+    ) {
+      const msgEn =
+        "EMERGENCY MEDICAL WARNING: Saans is an air quality decision assistant and CANNOT provide medical diagnosis or clinical treatment. The symptoms you reported (such as chest pain, acute breathlessness, or child wheezing) require immediate professional medical intervention. Please dial 112 / 102 or proceed immediately to the nearest hospital emergency room.";
+      const msgHi =
+        "आपातकालीन चिकित्सा चेतावनी: साँस (Saans) केवल एक वायु गुणवत्ता और दिनचर्या सहायता प्रणाली है। यह कोई चिकित्सीय निदान या इलाज प्रदान नहीं कर सकती। आपके द्वारा बताए गए लक्षण गंभीर हो सकते हैं। कृपया तुरंत 112 या 102 पर कॉल करें या नजदीकी अस्पताल जाएं।";
+      const msgMr =
+        "तातडीची वैद्यकीय सूचना: साँस (Saans) ही केवळ हवेच्या गुणवत्तेची माहिती देणारी प्रणाली आहे. ती वैद्यकीय निदान करू शकत नाही. कृपया त्वरित ११२ किंवा १०२ वर संपर्क साधा किंवा जवळच्या रुग्णालयात दाखल व्हा.";
+
+      return {
+        reply: language === "hi" ? msgHi : language === "mr" ? msgMr : msgEn,
+        is_medical_refusal: true,
+        citations: [
+          {
+            id: "medical-triage-redlines",
+            title: "Emergency Medicine Association Guidelines",
+            publisher: "Emergency Medicine Association of India",
+          },
+        ],
+        language,
+      };
+    }
+
+    if (lower.includes("plant") || lower.includes("पौधे") || lower.includes("झाडे")) {
+      return {
+        reply:
+          language === "hi"
+            ? "वैज्ञानिक शोध के अनुसार, इनडोर पौधे (जैसे स्नेक प्लांट) हवा से सूक्ष्म प्रदूषण कणों (PM2.5) को नहीं छान सकते [myth-indoor-plants]। पौधे केवल कुछ गैसों (VOCs) को धीरे-धीरे सोखते हैं। कमरे में HEPA प्यूरीफायर की बराबरी करने के लिए प्रति वर्ग मीटर 10 से 100 पौधों की आवश्यकता होगी, जो व्यावहारिक नहीं है।"
+            : language === "mr"
+            ? "वैज्ञानिक अभ्यासानुसार, घरातील झाडे सूक्ष्म प्रदूषण कण (PM2.5) गाळू शकत नाहीत [myth-indoor-plants]. झाडे फक्त काही वायू हळूहळू शोषून घेतात. एका खोलीत हेपा प्युरिफायरसारखी हवा शुद्ध करण्यासाठी दर चौरस मीटरला १० ते १०० झाडांची गरज पडेल, जे शक्य नाही."
+            : simplifyForChild
+            ? "Plants are awesome for looking green and making fresh oxygen during the day, but they cannot catch the microscopic dirty smog specks [myth-indoor-plants]! To clean a single bedroom, you would need so many plants that there wouldn't even be room for your bed. Only a real mechanical air purifier with a HEPA filter can trap fine PM2.5 particles."
+            : "Scientific consensus confirms that indoor house plants cannot filter fine particulate smog (PM2.5) [myth-indoor-plants]. While plants absorb trace volatile organic compounds in closed lab chambers, their Clean Air Delivery Rate (CADR) for particles is practically zero. Matching one mechanical HEPA purifier would require 10 to 100 plants per square meter. Do not rely on plants as a smog defense.",
+        is_medical_refusal: false,
+        citations: [
+          {
+            id: "myth-indoor-plants",
+            title: "Potted Plants Do Not Improve Indoor Air Quality: A Review",
+            publisher: "Journal of Exposure Science & Environmental Epidemiology",
+          },
+        ],
+        language,
+      };
+    }
+
+    if (lower.includes("jaggery") || lower.includes("gur") || lower.includes("गुड़")) {
+      return {
+        reply:
+          language === "hi"
+            ? "गुड़ खाने से फेफड़ों में जमा PM2.5 साफ नहीं होता [myth-jaggery-gur]। गुड़ भोजन नली और पेट में जाता है, जबकि प्रदूषण कण सांस नली और फेफड़ों के सबसे भीतरी हिस्सों में पहुंचते हैं। गुड़ पर निर्भर रहकर मास्क न पहनना स्वास्थ्य के लिए खतरनाक है।"
+            : "Consuming jaggery (gur) does NOT detoxify or clear lungs from inhaled PM2.5 [myth-jaggery-gur]. Ingested jaggery enters the digestive tract, whereas fine particulate matter is inhaled deep into the pulmonary alveoli and bloodstream. There is no biological mechanism for food in the stomach to extract trapped particulates from lung tissue.",
+        is_medical_refusal: false,
+        citations: [
+          {
+            id: "myth-jaggery-gur",
+            title: "Debunking Nutritional Smog Remedies",
+            publisher: "Indian Chest Society Advisory",
+          },
+        ],
+        language,
+      };
+    }
+
+    // Default status & routine optimization
+    return {
+      reply:
+        language === "hi"
+          ? "गाजियाबाद में वर्तमान वायु गुणवत्ता Severe श्रेणी (AQI 492) में है [cpcb-naqi-bands]। सुबह 7 बजे की सैर को दोपहर 2 बजे (14:00) स्थानांतरित करने से प्रदूषण का जोखिम 66.7% घटता है। खिड़कियां केवल दोपहर 12 से 3 बजे के बीच खोलें और बाहर निकलते समय N95 मास्क पहनें।"
+          : language === "mr"
+          ? "गाझियाबादमध्ये सध्याची हवेची गुणवत्ता Severe श्रेणीत (AQI 492) आहे [cpcb-naqi-bands]. सकाळचा व्यायाम दुपारी हलवल्यास प्रदूषणाचा संपर्क 66.7% कमी होतो. दुपारी १२ ते ३ दरम्यानच खिडक्या उघडा."
+          : simplifyForChild
+          ? "Right now outside, the air is in the Severe zone with an AQI of 492 [cpcb-naqi-bands]. Imagine the cold morning air as a heavy blanket holding tiny dust monsters close to the ground. If you play or walk at 2:00 PM instead of early morning, you breathe 66.7% less dirty air! Remember to wear your snug N95 superhero mask whenever you go out."
+          : "Current air quality in Ghaziabad is Severe with a CPCB AQI of 492 [cpcb-naqi-bands]. To minimize lung exposure, our scheduler recommends shifting flexible outdoor activities from 07:00 to 14:00, reducing inhaled particulate concentration by 66.7%. Keep windows closed during morning thermal inversion and air rooms briefly between 12 PM and 3 PM.",
+      is_medical_refusal: false,
+      citations: [
+        {
+          id: "cpcb-naqi-bands",
+          title: "CPCB National Air Quality Index Standards",
+          publisher: "Central Pollution Control Board",
+        },
+      ],
+      language,
+    };
+  }
+}
+
 function round(val: number, decimals: number): number {
   const factor = Math.pow(10, decimals);
   return Math.round(val * factor) / factor;

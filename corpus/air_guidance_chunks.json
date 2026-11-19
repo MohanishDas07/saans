@@ -1,0 +1,272 @@
+[
+  {
+    "id": "who-pm25-guidelines",
+    "title": "WHO Global Air Quality Guidelines: Particulate Matter",
+    "publisher": "World Health Organization (WHO)",
+    "url": "https://www.who.int/publications/i/item/9789240034228",
+    "retrieval_date": "2026-11-17",
+    "text": "The World Health Organization (2021) recommends a 24-hour PM2.5 limit of 15 µg/m³ and an annual limit of 5 µg/m³. Fine particulate matter penetrates deep into lung alveoli and enters the bloodstream, elevating risks of stroke, ischemic heart disease, COPD, and pediatric respiratory infections. No safe threshold of particulate exposure has been identified.",
+    "tags": ["who", "pm25", "guidelines", "health_limits", "respiratory"]
+  },
+  {
+    "id": "cpcb-naqi-bands",
+    "title": "CPCB National Air Quality Index (NAQI) Standard and Health Impacts",
+    "publisher": "Central Pollution Control Board (CPCB), Government of India",
+    "url": "https://cpcb.nic.in/national-air-quality-index/",
+    "retrieval_date": "2026-11-17",
+    "text": "India NAQI defines six health categories based on 24-hour average PM2.5: Good (0-30 µg/m³, AQI 0-50), Satisfactory (31-60 µg/m³, AQI 51-100), Moderate (61-90 µg/m³, AQI 101-200), Poor (91-120 µg/m³, AQI 201-300), Very Poor (121-250 µg/m³, AQI 301-400), and Severe (250+ µg/m³, AQI 401-500). In Severe air, healthy adults experience respiratory distress and vulnerable groups suffer pronounced cardiovascular impacts.",
+    "tags": ["cpcb", "naqi", "aqi_bands", "pm25", "breakpoints", "india"]
+  },
+  {
+    "id": "caqm-grap-overview",
+    "title": "Graded Response Action Plan (GRAP) Framework for Delhi-NCR",
+    "publisher": "Commission for Air Quality Management (CAQM)",
+    "url": "https://caqm.nic.in/grap-notifications",
+    "retrieval_date": "2026-11-17",
+    "text": "GRAP is a dynamic emergency response plan in Delhi-NCR triggered across four stages: Stage I (Poor, AQI 201-300), Stage II (Very Poor, AQI 301-400), Stage III (Severe, AQI 401-450), and Stage IV (Severe+, AQI > 450). Actions include road water sprinkling, construction bans, diesel generator restrictions, and transitioning school classes online.",
+    "tags": ["caqm", "grap", "delhi_ncr", "emergency_actions", "schools"]
+  },
+  {
+    "id": "caqm-grap-stage4-actions",
+    "title": "GRAP Stage IV Emergency Restrictions: Heavy Vehicles and Schools",
+    "publisher": "Commission for Air Quality Management (CAQM)",
+    "url": "https://caqm.nic.in/grap-notifications",
+    "retrieval_date": "2026-11-17",
+    "text": "When AQI exceeds 450 (Stage IV), CAQM prohibits the entry of non-essential diesel trucks into Delhi (except LNG/CNG/electric and essential commodities), halts all construction and demolition work, and instructs state authorities to transition physical school classes online for classes 6 to 9 and 11.",
+    "tags": ["grap", "stage4", "truck_ban", "school_closure", "delhi"]
+  },
+  {
+    "id": "mask-n95-standards",
+    "title": "Respiratory Protection: N95 and FFP2 Standards vs Surgical and Cloth",
+    "publisher": "Indian Council of Medical Research (ICMR) / US NIOSH",
+    "url": "https://www.cdc.gov/niosh/npptl/topics/respirators/disp_part/default.html",
+    "retrieval_date": "2026-11-17",
+    "text": "Certified ISI/BIS or NIOSH N95 respirators use meltblown polypropylene with electrostatic charge to capture particles down to 0.3 microns. In typical public use, fit-adjusted inward leakage reduces real-world efficiency to ~85%. Surgical masks leak ~40% around edges, and single/double cloth masks leak 70-80%, offering negligible defense against toxic PM2.5 aerosol.",
+    "tags": ["masks", "n95", "ffp2", "cloth_mask", "filtration", "leakage"]
+  },
+  {
+    "id": "mask-fit-and-reuse",
+    "title": "Proper Mask Fit, Seal Check, and Hygiene Guidelines",
+    "publisher": "All India Institute of Medical Sciences (AIIMS)",
+    "url": "https://www.aiims.edu/en/clean-air-health-advisory.html",
+    "retrieval_date": "2026-11-17",
+    "text": "An N95 mask requires an airtight perimeter seal. Perform a user seal check by exhaling gently: air should not escape near the nose bridge or cheeks. Discard or rotate the mask when breathing resistance increases or after 40 hours of cumulative wear. Moisture from breath degrades electrostatic charge; rotate between two masks every 4 hours during outdoor work.",
+    "tags": ["mask_fit", "seal_check", "mask_reuse", "outdoor_workers"]
+  },
+  {
+    "id": "cadr-purifier-sizing",
+    "title": "Room Air Purifier Sizing: Clean Air Delivery Rate (CADR) and Air Changes",
+    "publisher": "Association of Home Appliance Manufacturers (AHAM) & CPCB",
+    "url": "https://ahamverifide.org/air-cleaner-cadr-standards/",
+    "retrieval_date": "2026-11-17",
+    "text": "Clean Air Delivery Rate (CADR) in m³/h defines the volume of clean air delivered per unit time. For effective PM2.5 reduction in severe winter smog, a room needs at least 4 to 5 Air Changes per Hour (ACH). Required CADR = Room Volume (m³) × Desired ACH. A typical bedroom (12x10x10 ft ≈ 34 m³) requires a purifier with smoke CADR of at least 150-200 m³/h.",
+    "tags": ["purifier", "cadr", "sizing", "room_volume", "ach"]
+  },
+  {
+    "id": "hepa-filter-technology",
+    "title": "True HEPA Filtration: Mechanisms and Filter Life",
+    "publisher": "US EPA Indoor Air Quality Division",
+    "url": "https://www.epa.gov/indoor-air-quality-iaq/air-cleaners-and-air-filters-home",
+    "retrieval_date": "2026-11-17",
+    "text": "True HEPA (H13 grade) filters mechanically capture 99.97% of particles down to 0.3 microns via interception, impaction, and diffusion. In severe North Indian winters, pre-filters should be vacuumed every 2 weeks, and the main HEPA filter should be replaced every 4 to 6 months. Running a purifier on medium-high speed in a closed room achieves 70-85% PM2.5 reduction in 45 minutes.",
+    "tags": ["hepa", "h13", "filter_life", "air_purifier", "maintenance"]
+  },
+  {
+    "id": "corsi-rosenthal-diy",
+    "title": "Corsi-Rosenthal Box: Low-Cost High-CADR DIY Air Filtration",
+    "publisher": "UC Davis / ASHRAE Research",
+    "url": "https://cleanaircrew.org/box-fan-filters/",
+    "retrieval_date": "2026-11-17",
+    "text": "A Corsi-Rosenthal box combines a standard 20-inch box fan with four MERV-13 furnace filters taped into a cube. Peer-reviewed evaluations show it delivers CADR exceeding 300-400 m³/h at a fraction of commercial purifier costs, effectively reducing indoor fine particles and viral bioaerosols safely without producing ozone.",
+    "tags": ["corsi_rosenthal", "diy_purifier", "merv13", "low_cost", "cadr"]
+  },
+  {
+    "id": "indoor-ozone-dangers",
+    "title": "Avoid Ionizers, Ozone Generators, and UV Photocatalytic Cleaners",
+    "publisher": "California Air Resources Board (CARB)",
+    "url": "https://ww2.arb.ca.gov/our-work/programs/air-cleaning-devices",
+    "retrieval_date": "2026-11-17",
+    "text": "Never use air cleaners that generate ozone or rely on ionization, plasma, or photocatalytic oxidation. Ozone is a toxic lung irritant that triggers asthma exacerbations and reacts with indoor household volatile organics to create secondary ultra-fine particulate matter. Choose strictly mechanical True HEPA filtration without ionizing stages.",
+    "tags": ["ozone", "ionizers", "indoor_hazards", "carb_standards"]
+  },
+  {
+    "id": "winter-thermal-inversion",
+    "title": "Meteorological Inversion and Diurnal Smog Cycles in Indo-Gangetic Plains",
+    "publisher": "India Meteorological Department (IMD) & SAFAR",
+    "url": "https://safar.tropmet.res.in/",
+    "retrieval_date": "2026-11-17",
+    "text": "During North Indian winters, surface radiational cooling creates a nocturnal temperature inversion layer, trapping vehicular and biomass emissions within 50 to 100 meters of ground level between 10 PM and 9 AM. Solar heating after 11 AM lifts the boundary layer, diluting particulate concentration by 40-60% between 12 PM and 4 PM before the evening inversion sets in.",
+    "tags": ["thermal_inversion", "diurnal_cycle", "boundary_layer", "safari", "imd"]
+  },
+  {
+    "id": "indoor-ventilation-timing",
+    "title": "Optimal Window Timing: Natural Airing during Midday Dispersion",
+    "publisher": "Central Pollution Control Board (CPCB)",
+    "url": "https://cpcb.nic.in/citizen-charter-clean-air/",
+    "retrieval_date": "2026-11-17",
+    "text": "Keeping windows tightly shut during morning and late evening prevents heavy smog ingress. Open windows for 20-30 minutes strictly between 12 PM and 3 PM when solar boundary-layer lifting reduces ambient concentration. Brief afternoon cross-ventilation prevents dangerous indoor CO2 and moisture buildup without overloading indoor air with particulates.",
+    "tags": ["ventilation", "window_timing", "indoor_air", "airing", "co2"]
+  },
+  {
+    "id": "indoor-wet-mopping",
+    "title": "Wet Cleaning Protocol vs Dry Sweeping and Dusting",
+    "publisher": "World Health Organization (WHO) Guidelines for Indoor Air",
+    "url": "https://www.who.int/tools/clean-household-air-solutions-toolkit",
+    "retrieval_date": "2026-11-17",
+    "text": "Dry brooming (jhadu) and feather dusting resuspend settled toxic fine dust into the breathing zone for hours. Clean floors exclusively with damp microfiber mops and wipe surfaces with damp cloths. This traps heavy metals and particulate matter in wash water without re-polluting indoor air.",
+    "tags": ["wet_mopping", "dry_sweeping", "resuspension", "dust_control"]
+  },
+  {
+    "id": "envelope-draft-sealing",
+    "title": "Building Envelope Weatherstripping and Gap Sealing",
+    "publisher": "Bureau of Energy Efficiency (BEE) & ASHRAE",
+    "url": "https://www.beeindia.gov.in/en/energy-efficient-buildings",
+    "retrieval_date": "2026-11-17",
+    "text": "Up to 50% of outdoor smog infiltrates through door and window perimeter gaps. Applying self-adhesive foam weatherstripping tape or placing a rolled damp towel across door bottoms reduces building air exchange from leaky ~1.5/h to sealed ~0.4/h, significantly improving indoor purifier performance.",
+    "tags": ["weatherstripping", "door_seal", "draft_stopper", "infiltration"]
+  },
+  {
+    "id": "clean-cooking-exhaust",
+    "title": "Kitchen Ventilation and Clean Cooking Alternatives",
+    "publisher": "ICMR National Institute of Occupational Health",
+    "url": "https://www.nioh.org/research-indoor-air",
+    "retrieval_date": "2026-11-17",
+    "text": "Cooking produces ultrafine particulates and acrolein, particularly during oil frying and tempering (tadka). Always operate an exhaust hood or cross-ventilation fan during cooking and close internal doors separating the kitchen from bedrooms. Switching to induction cooktops eliminates unvented fuel combustion byproduct gases.",
+    "tags": ["cooking", "tadka", "exhaust_hood", "induction", "kitchen_air"]
+  },
+  {
+    "id": "incense-and-mosquito-coils",
+    "title": "Indoor Combustion Hazards: Agarbatti, Dhoop, and Mosquito Coils",
+    "publisher": "Chest Research Foundation (CRF) Pune",
+    "url": "https://crfindia.com/indoor-air-pollution-studies/",
+    "retrieval_date": "2026-11-17",
+    "text": "Burning one mosquito coil inside an enclosed room releases particulate matter equivalent to smoking 75 to 100 cigarettes, along with toxic formaldehyde. Scented incense sticks (agarbatti) and dhoop emit concentrated polycyclic aromatic hydrocarbons (PAHs) and benzene. Replace them with electric mosquito nets and avoid unvented burning.",
+    "tags": ["mosquito_coil", "incense", "agarbatti", "indoor_combustion", "carcinogens"]
+  },
+  {
+    "id": "myth-indoor-plants",
+    "title": "Myth Buster: Indoor Plants Do Not Filter Fine Particulate Smog",
+    "publisher": "Drexel University / Nature Journal of Exposure Science",
+    "url": "https://www.nature.com/articles/s41370-019-0175-9",
+    "retrieval_date": "2026-11-17",
+    "text": "Common house plants (snake plant, areca palm, money plant) cannot filter airborne fine particulate matter (PM2.5). While plants can metabolize trace VOCs under controlled lab conditions over days, their Clean Air Delivery Rate for particles is practically zero. A single room would require 10 to 100 plants per square meter to match one mechanical purifier.",
+    "tags": ["myth", "plants", "areca_palm", "snake_plant", "filter_myth"]
+  },
+  {
+    "id": "myth-jaggery-gur",
+    "title": "Myth Buster: Jaggery (Gur) Does Not Detoxify Lungs from Particulate Matter",
+    "publisher": "All India Institute of Medical Sciences (AIIMS) Pulmonology",
+    "url": "https://www.aiims.edu/en/clean-air-health-advisory.html",
+    "retrieval_date": "2026-11-17",
+    "text": "Consuming jaggery or gur enters the digestive tract (esophagus and stomach), whereas PM2.5 particles are inhaled into the pulmonary tree and alveolar capillary beds. Jaggery has no physiological pathway to remove particles embedded in lung tissue. Relying on jaggery while skipping N95 masks or air purifiers creates dangerous false security.",
+    "tags": ["myth", "jaggery", "gur", "lung_detox", "digestion_myth"]
+  },
+  {
+    "id": "myth-steam-inhalation",
+    "title": "Myth Buster: Steam Inhalation Does Not Clear Alveolar PM2.5",
+    "publisher": "Indian Chest Society (ICS)",
+    "url": "https://indianchestsociety.org/public-advisories/",
+    "retrieval_date": "2026-11-17",
+    "text": "Inhaling steam moistens nasal mucous membranes and may ease upper-airway congestion, but it cannot dissolve or dislodge fine particulate matter deposited in the deep bronchioles or alveoli. Excessive or boiling steam inhalation can scald delicate respiratory epithelium, increasing vulnerability to secondary infections.",
+    "tags": ["myth", "steam", "alveoli", "inhalation_myth"]
+  },
+  {
+    "id": "myth-cloth-mask",
+    "title": "Myth Buster: Cloth Masks and Handkerchiefs Do Not Block PM2.5",
+    "publisher": "Indian Council of Medical Research (ICMR)",
+    "url": "https://www.icmr.gov.in/guidelines-particulate-respirators.html",
+    "retrieval_date": "2026-11-17",
+    "text": "Woven cloth, cotton bandanas, and folded handkerchiefs have pore sizes between 100 and 500 microns. Fine particles (PM2.5) are under 2.5 microns—smaller than red blood cells. A cloth mask filters less than 15-20% of PM2.5 and leaks around the nose and jaw. Only certified electrostatically charged N95/FFP2 respirators provide adequate protection.",
+    "tags": ["myth", "cloth_mask", "handkerchief", "pore_size", "n95_comparison"]
+  },
+  {
+    "id": "myth-air-fresheners",
+    "title": "Myth Buster: Room Sprays and Diffusers Worsen Smog",
+    "publisher": "American Lung Association",
+    "url": "https://www.lung.org/clean-air/indoor-air/indoor-air-pollutants/cleaning-supplies-household-chem",
+    "retrieval_date": "2026-11-17",
+    "text": "Aerosol air fresheners, essential oil diffusers, and scented candles do not clean air; they mask odors by emitting terpenes, limonene, and synthetic VOCs. In the presence of ambient ozone, these compounds react to generate secondary organic aerosols (SOA) and formaldehyde, significantly worsening indoor air toxicity.",
+    "tags": ["myth", "air_fresheners", "diffusers", "vocs", "secondary_aerosols"]
+  },
+  {
+    "id": "pediatric-air-vulnerability",
+    "title": "Children and Infants: Elevated Physiological Exposure to Smog",
+    "publisher": "Indian Academy of Pediatrics (IAP)",
+    "url": "https://iapindia.org/pollution-pediatric-health-guidelines/",
+    "retrieval_date": "2026-11-17",
+    "text": "Children breathe more air per kilogram of body weight than adults and possess narrower airways and immature alveolar defenses. Long-term exposure to winter PM2.5 impairs lung capacity development by 10-15%, triggers pediatric asthma attacks, and increases childhood ear and lung infections. Physical school exertion must be suspended during Very Poor and Severe AQI.",
+    "tags": ["children", "pediatric", "infants", "lung_growth", "asthma"]
+  },
+  {
+    "id": "elderly-and-cardiac-risk",
+    "title": "Senior Citizens: Cardiovascular and Cerebrovascular Smog Risks",
+    "publisher": "Cardiological Society of India (CSI)",
+    "url": "https://csi.org.in/clean-air-cardiac-advisory/",
+    "retrieval_date": "2026-11-17",
+    "text": "Inhaled ultrafine particles induce systemic arterial inflammation, platelet activation, and vascular constriction, causing blood pressure spikes within hours of high exposure. Hospital admissions for myocardial infarction (heart attacks) and ischemic stroke increase by 15-20% during severe winter smog episodes. Seniors must strictly avoid early morning walks.",
+    "tags": ["elderly", "cardiovascular", "heart_attack", "stroke", "blood_pressure"]
+  },
+  {
+    "id": "outdoor-worker-safety",
+    "title": "Occupational Protection Protocol for Outdoor Delivery and Sanitation Staff",
+    "publisher": "Directorate General of Health Services (DGHS), Ministry of Health",
+    "url": "https://dghs.gov.in/occupational-smog-safety-manual/",
+    "retrieval_date": "2026-11-17",
+    "text": "Two-wheeler delivery riders and sanitation workers inhale 2 to 3 times more air per hour due to physical exertion directly in tailpipe exhaust plumes. Employers and RWAs must provide certified N95 masks replaced every 40 hours. Staff should rotate two masks per shift (as sweat reduces electrostatic efficiency) and take indoor breaks in filtered lobbies.",
+    "tags": ["outdoor_workers", "delivery_riders", "occupational", "n95_rotation"]
+  },
+  {
+    "id": "transport-emission-comparison",
+    "title": "Transport Mode Tailpipe Emissions: Two-Wheelers vs Public Transit",
+    "publisher": "Automotive Research Association of India (ARAI) & CPCB",
+    "url": "https://www.araiindia.com/emission-factors-database",
+    "retrieval_date": "2026-11-17",
+    "text": "A solo petrol two-wheeler emits ~0.045 g PM2.5 and 0.042 kg CO2e per passenger-kilometer, directly discharging exhaust into the breathing zone of following commuters. Transitioning trips to Delhi Metro rail reduces PM2.5 to 0.001 g and CO2e to 0.019 kg/km, while shielding commuters in filtered train cars.",
+    "tags": ["transport", "emissions", "metro", "two_wheeler", "co2e", "sustainability"]
+  },
+  {
+    "id": "berkeley-earth-heuristic",
+    "title": "The Cigarette-Equivalent Metric: Background, Provenance, and Limits",
+    "publisher": "Berkeley Earth (Muller & Muller, 2015)",
+    "url": "https://berkeleyearth.org/air-pollution-and-cigarette-equivalence/",
+    "retrieval_date": "2026-11-17",
+    "text": "The rule of thumb equates a 24-hour average PM2.5 exposure of 22 µg/m³ to smoking roughly one cigarette per day, derived by comparing estimated non-linear mortality burdens of ambient air pollution to tobacco epidemiology. It serves as an illustrative communication heuristic to help the public visualize risk, but is NOT a clinical, diagnostic, or oncological equivalence.",
+    "tags": ["berkeley_earth", "cigarette_equivalent", "heuristic", "disclaimer", "risk_communication"]
+  },
+  {
+    "id": "exercise-timing-inversion",
+    "title": "Physical Exercise and Aerobic Exertion in Polluted Air",
+    "publisher": "Sports Authority of India & Chest Research Foundation",
+    "url": "https://crfindia.com/exercise-smog-guidance/",
+    "retrieval_date": "2026-11-17",
+    "text": "During aerobic exercise (running, brisk walking, cycling), minute ventilation increases from ~0.45 m³/h to 1.5-2.5 m³/h, and mouth breathing bypasses natural nasal filtration, delivering 4 to 8 times more particulate mass deep into bronchial tissue. Never exercise outdoors when AQI exceeds 200. Exercise indoors in a filtered room or shift outdoor activities to 1 PM - 3 PM.",
+    "tags": ["exercise", "morning_walk", "inhalation_rate", "nasal_bypass"]
+  },
+  {
+    "id": "school-morning-assemblies",
+    "title": "Guidelines for Schools during Smog Episodes: Recess and Assemblies",
+    "publisher": "Central Board of Secondary Education (CBSE) Health Advisory",
+    "url": "https://www.cbse.gov.in/cbsesite/health-pollution-advisories.html",
+    "retrieval_date": "2026-11-17",
+    "text": "When AQI is in the Poor or Very Poor range, schools must cancel outdoor morning assemblies, which coincide with morning peak inversion between 7:30 AM and 9:00 AM. Outdoor sports periods must be shifted indoors or replaced with breathing-safe classroom activities. Classroom windows should remain closed during morning school hours.",
+    "tags": ["schools", "assemblies", "morning_sports", "cbse", "children"]
+  },
+  {
+    "id": "fireplaces-and-wood-burning",
+    "title": "Winter Heating: Ban on Open Wood and Biomass Fires",
+    "publisher": "Delhi Pollution Control Committee (DPCC)",
+    "url": "https://dpcc.delhigovt.nic.in/winter-action-plan",
+    "retrieval_date": "2026-11-17",
+    "text": "Open burning of wood, leaves, or coal by night watchmen and street residents for winter heating emits highly toxic unburned organic carbon, black carbon, and carbon monoxide directly at ground level. Resident associations and security agencies should provide electric radiant heaters or sealed oil heaters instead of allowing open coal or wood brazier (angeethi) fires.",
+    "tags": ["heating", "biomass_burning", "angeethi", "dpcc", "wood_smoke"]
+  },
+  {
+    "id": "medical-triage-redlines",
+    "title": "Emergency Warning Signs: Acute Respiratory Distress Requiring Immediate Care",
+    "publisher": "Emergency Medicine Association of India (EMAI)",
+    "url": "https://emai.in/clinical-guidelines-asthma-emergency",
+    "retrieval_date": "2026-11-17",
+    "text": "Digital air quality assistants must never offer medical diagnosis. Individuals experiencing severe breathlessness, inability to speak full sentences, audible wheezing in young children, chest pain, blue-tinged lips or fingernails, or confusion must immediately seek emergency medical attention (Call 112/102 or visit the nearest hospital emergency room).",
+    "tags": ["medical_triage", "emergency", "redlines", "asthma_attack", "safety"]
+  }
+]
