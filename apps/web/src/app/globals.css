@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-paper: #F3EFE6;
+    --bg-surface: #FBF8F1;
+    --bg-card: #FFFFFF;
+    --color-ink: #17181A;
+    --color-muted: #4A4D52;
+    --color-rule: #CFC8B8;
+  }
+
+  .dark {
+    --bg-paper: #141517;
+    --bg-surface: #1D1E22;
+    --bg-card: #24262B;
+    --color-ink: #F3EFE6;
+    --color-muted: #9EA2A8;
+    --color-rule: #33363D;
+  }
+
+  body {
+    background-color: var(--bg-paper);
+    color: var(--color-ink);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Accessible Focus States */
+  :focus-visible {
+    outline: 2px solid #17181A;
+    outline-offset: 2px;
+  }
+
+  .dark :focus-visible {
+    outline: 2px solid #F3EFE6;
+    outline-offset: 2px;
+  }
+
+  /* Skip Link */
+  .skip-to-content {
+    position: absolute;
+    top: -100px;
+    left: 1rem;
+    background: #17181A;
+    color: #F3EFE6;
+    padding: 0.5rem 1rem;
+    z-index: 1000;
+    font-weight: 600;
+    transition: top 0.2s ease-in-out;
+  }
+
+  .skip-to-content:focus {
+    top: 1rem;
+  }
+}
+
+/* Elder Mode Enhancements */
+body.elder-mode {
+  font-size: 1.1875rem !important;
+  line-height: 1.75 !important;
+}
+
+body.elder-mode h1 {
+  font-size: 2.25rem !important;
+}
+
+body.elder-mode h2 {
+  font-size: 1.75rem !important;
+}
+
+body.elder-mode button,
+body.elder-mode input,
+body.elder-mode select {
+  min-height: 52px !important;
+  font-size: 1.125rem !important;
+}
+
+/* Print Styles for Community Advisory Cards */
+@media print {
+  body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+  }
+
+  nav, footer, .no-print {
+    display: none !important;
+  }
+
+  .printable-card {
+    border: 2px solid #000000 !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    page-break-inside: avoid;
+  }
+}

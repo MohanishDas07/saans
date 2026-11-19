@@ -1,0 +1,1460 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Saans API - Clean Air Intelligence & Breath Budget Engine",
+    "description": "Deterministic exposure engine, CPCB AQI calculator, and AI tool interface.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Check Health",
+        "operationId": "check_health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/geocode": {
+      "get": {
+        "tags": [
+          "Geocoding"
+        ],
+        "summary": "Geocode City",
+        "operationId": "geocode_city_api_v1_geocode_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "City name to search",
+              "default": "Ghaziabad",
+              "title": "Q"
+            },
+            "description": "City name to search"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeocodeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/air": {
+      "get": {
+        "tags": [
+          "Air Quality"
+        ],
+        "summary": "Get Air",
+        "operationId": "get_air_api_v1_air_get",
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 90.0,
+              "minimum": -90.0,
+              "description": "Latitude",
+              "default": 28.6692,
+              "title": "Lat"
+            },
+            "description": "Latitude"
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 180.0,
+              "minimum": -180.0,
+              "description": "Longitude",
+              "default": 77.4538,
+              "title": "Lon"
+            },
+            "description": "Longitude"
+          },
+          {
+            "name": "city",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "City name",
+              "default": "Ghaziabad",
+              "title": "City"
+            },
+            "description": "City name"
+          },
+          {
+            "name": "fallback",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Force labeled offline sample fixture",
+              "default": false,
+              "title": "Fallback"
+            },
+            "description": "Force labeled offline sample fixture"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirQualityResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plan": {
+      "post": {
+        "tags": [
+          "Planning"
+        ],
+        "summary": "Generate Day Plan",
+        "operationId": "generate_day_plan_api_v1_plan_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/simulate": {
+      "post": {
+        "tags": [
+          "Simulation"
+        ],
+        "summary": "Simulate Interventions",
+        "operationId": "simulate_interventions_api_v1_simulate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimulateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimulateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/community/advisory": {
+      "post": {
+        "tags": [
+          "Community"
+        ],
+        "summary": "Generate Community Advisory",
+        "operationId": "generate_community_advisory_api_v1_community_advisory_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommunityAdvisoryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityAdvisoryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ActivityScheduleItem": {
+        "properties": {
+          "activity_id": {
+            "type": "string",
+            "title": "Activity Id"
+          },
+          "name_en": {
+            "type": "string",
+            "title": "Name En"
+          },
+          "name_hi": {
+            "type": "string",
+            "title": "Name Hi"
+          },
+          "name_mr": {
+            "type": "string",
+            "title": "Name Mr"
+          },
+          "baseline_time": {
+            "type": "string",
+            "title": "Baseline Time"
+          },
+          "optimized_time": {
+            "type": "string",
+            "title": "Optimized Time"
+          },
+          "duration_hours": {
+            "type": "integer",
+            "title": "Duration Hours"
+          },
+          "baseline_pm25": {
+            "type": "number",
+            "title": "Baseline Pm25"
+          },
+          "optimized_pm25": {
+            "type": "number",
+            "title": "Optimized Pm25"
+          },
+          "reduction_ug_m3": {
+            "type": "number",
+            "title": "Reduction Ug M3"
+          },
+          "reduction_pct": {
+            "type": "number",
+            "title": "Reduction Pct"
+          },
+          "rationale_en": {
+            "type": "string",
+            "title": "Rationale En"
+          },
+          "rationale_hi": {
+            "type": "string",
+            "title": "Rationale Hi"
+          },
+          "rationale_mr": {
+            "type": "string",
+            "title": "Rationale Mr"
+          }
+        },
+        "type": "object",
+        "required": [
+          "activity_id",
+          "name_en",
+          "name_hi",
+          "name_mr",
+          "baseline_time",
+          "optimized_time",
+          "duration_hours",
+          "baseline_pm25",
+          "optimized_pm25",
+          "reduction_ug_m3",
+          "reduction_pct",
+          "rationale_en",
+          "rationale_hi",
+          "rationale_mr"
+        ],
+        "title": "ActivityScheduleItem"
+      },
+      "AirQualityResponse": {
+        "properties": {
+          "city": {
+            "type": "string",
+            "title": "City"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State"
+          },
+          "country": {
+            "type": "string",
+            "title": "Country",
+            "default": "India"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude"
+          },
+          "current_pm2_5": {
+            "type": "number",
+            "title": "Current Pm2 5"
+          },
+          "current_pm10": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Pm10"
+          },
+          "current_cpcb_aqi": {
+            "type": "integer",
+            "title": "Current Cpcb Aqi"
+          },
+          "current_aqi_band": {
+            "type": "string",
+            "title": "Current Aqi Band"
+          },
+          "current_aqi_color": {
+            "type": "string",
+            "title": "Current Aqi Color"
+          },
+          "dominant_pollutant": {
+            "type": "string",
+            "title": "Dominant Pollutant"
+          },
+          "one_sentence_verdict_en": {
+            "type": "string",
+            "title": "One Sentence Verdict En"
+          },
+          "one_sentence_verdict_hi": {
+            "type": "string",
+            "title": "One Sentence Verdict Hi"
+          },
+          "one_sentence_verdict_mr": {
+            "type": "string",
+            "title": "One Sentence Verdict Mr"
+          },
+          "data_as_of": {
+            "type": "string",
+            "title": "Data As Of"
+          },
+          "data_source": {
+            "type": "string",
+            "title": "Data Source"
+          },
+          "is_sample_or_fallback": {
+            "type": "boolean",
+            "title": "Is Sample Or Fallback"
+          },
+          "fallback_banner_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fallback Banner Text"
+          },
+          "active_grap_stage": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GRAPStageInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "hourly_forecast": {
+            "items": {
+              "$ref": "#/components/schemas/HourlyAirPoint"
+            },
+            "type": "array",
+            "title": "Hourly Forecast"
+          }
+        },
+        "type": "object",
+        "required": [
+          "city",
+          "latitude",
+          "longitude",
+          "current_pm2_5",
+          "current_cpcb_aqi",
+          "current_aqi_band",
+          "current_aqi_color",
+          "dominant_pollutant",
+          "one_sentence_verdict_en",
+          "one_sentence_verdict_hi",
+          "one_sentence_verdict_mr",
+          "data_as_of",
+          "data_source",
+          "is_sample_or_fallback",
+          "hourly_forecast"
+        ],
+        "title": "AirQualityResponse"
+      },
+      "CommunityAdvisoryRequest": {
+        "properties": {
+          "organization_name": {
+            "type": "string",
+            "maxLength": 120,
+            "title": "Organization Name",
+            "default": "Vasundhara Enclave RWA"
+          },
+          "organization_type": {
+            "type": "string",
+            "enum": [
+              "rwa",
+              "school",
+              "office",
+              "community"
+            ],
+            "title": "Organization Type",
+            "default": "rwa"
+          },
+          "city": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "City",
+            "default": "Ghaziabad"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude",
+            "default": 28.6692
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude",
+            "default": 77.4538
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "hi",
+              "mr"
+            ],
+            "title": "Language",
+            "default": "en"
+          }
+        },
+        "type": "object",
+        "title": "CommunityAdvisoryRequest"
+      },
+      "CommunityAdvisoryResponse": {
+        "properties": {
+          "organization_name": {
+            "type": "string",
+            "title": "Organization Name"
+          },
+          "date_formatted": {
+            "type": "string",
+            "title": "Date Formatted"
+          },
+          "city": {
+            "type": "string",
+            "title": "City"
+          },
+          "aqi": {
+            "type": "integer",
+            "title": "Aqi"
+          },
+          "aqi_band": {
+            "type": "string",
+            "title": "Aqi Band"
+          },
+          "aqi_color_hex": {
+            "type": "string",
+            "title": "Aqi Color Hex"
+          },
+          "headline": {
+            "type": "string",
+            "title": "Headline"
+          },
+          "bulletin_points": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Bulletin Points"
+          },
+          "school_advisory": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "School Advisory"
+          },
+          "rwa_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Rwa Actions"
+          },
+          "verification_source": {
+            "type": "string",
+            "title": "Verification Source"
+          },
+          "generated_at_iso": {
+            "type": "string",
+            "title": "Generated At Iso"
+          }
+        },
+        "type": "object",
+        "required": [
+          "organization_name",
+          "date_formatted",
+          "city",
+          "aqi",
+          "aqi_band",
+          "aqi_color_hex",
+          "headline",
+          "bulletin_points",
+          "rwa_actions",
+          "verification_source",
+          "generated_at_iso"
+        ],
+        "title": "CommunityAdvisoryResponse"
+      },
+      "FamilyMember": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 50,
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 50,
+            "title": "Label"
+          },
+          "age_band": {
+            "type": "string",
+            "enum": [
+              "infant",
+              "child",
+              "adult",
+              "senior"
+            ],
+            "title": "Age Band"
+          },
+          "is_breathing_sensitive": {
+            "type": "boolean",
+            "title": "Is Breathing Sensitive",
+            "default": false
+          },
+          "is_outdoor_worker": {
+            "type": "boolean",
+            "title": "Is Outdoor Worker",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "age_band"
+        ],
+        "title": "FamilyMember"
+      },
+      "GRAPStageInfo": {
+        "properties": {
+          "stage_number": {
+            "type": "integer",
+            "maximum": 4.0,
+            "minimum": 1.0,
+            "title": "Stage Number"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "aqi_threshold": {
+            "type": "string",
+            "title": "Aqi Threshold"
+          },
+          "mandatory_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Mandatory Actions"
+          },
+          "citizen_advisory": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Citizen Advisory"
+          }
+        },
+        "type": "object",
+        "required": [
+          "stage_number",
+          "name",
+          "aqi_threshold",
+          "mandatory_actions",
+          "citizen_advisory"
+        ],
+        "title": "GRAPStageInfo"
+      },
+      "GeocodeItem": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Name"
+          },
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude"
+          },
+          "country": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Country",
+            "default": "India"
+          },
+          "admin1": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Admin1"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "latitude",
+          "longitude"
+        ],
+        "title": "GeocodeItem"
+      },
+      "GeocodeResponse": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "title": "Query"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/GeocodeItem"
+            },
+            "type": "array",
+            "title": "Results"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "title": "GeocodeResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "healthy",
+              "degraded",
+              "offline"
+            ],
+            "title": "Status",
+            "default": "healthy"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version",
+            "default": "1.0.0"
+          },
+          "service": {
+            "type": "string",
+            "title": "Service",
+            "default": "saans-api"
+          },
+          "offline_fallback_available": {
+            "type": "boolean",
+            "title": "Offline Fallback Available",
+            "default": true
+          },
+          "cache_backend": {
+            "type": "string",
+            "title": "Cache Backend",
+            "default": "sqlite"
+          }
+        },
+        "type": "object",
+        "title": "HealthResponse"
+      },
+      "HourlyAirPoint": {
+        "properties": {
+          "hour": {
+            "type": "integer",
+            "maximum": 23.0,
+            "minimum": 0.0,
+            "title": "Hour"
+          },
+          "time_iso": {
+            "type": "string",
+            "title": "Time Iso"
+          },
+          "pm2_5": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Pm2 5"
+          },
+          "pm10": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pm10"
+          },
+          "cpcb_aqi": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Cpcb Aqi"
+          },
+          "aqi_band_code": {
+            "type": "string",
+            "title": "Aqi Band Code"
+          },
+          "aqi_band_name": {
+            "type": "string",
+            "title": "Aqi Band Name"
+          },
+          "aqi_color_hex": {
+            "type": "string",
+            "title": "Aqi Color Hex"
+          },
+          "health_statement_en": {
+            "type": "string",
+            "title": "Health Statement En"
+          },
+          "health_statement_hi": {
+            "type": "string",
+            "title": "Health Statement Hi"
+          },
+          "health_statement_mr": {
+            "type": "string",
+            "title": "Health Statement Mr"
+          },
+          "grap_stage": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 4.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grap Stage"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hour",
+          "time_iso",
+          "pm2_5",
+          "cpcb_aqi",
+          "aqi_band_code",
+          "aqi_band_name",
+          "aqi_color_hex",
+          "health_statement_en",
+          "health_statement_hi",
+          "health_statement_mr"
+        ],
+        "title": "HourlyAirPoint"
+      },
+      "HouseholdProfile": {
+        "properties": {
+          "city_name": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "City Name",
+            "default": "Ghaziabad"
+          },
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude",
+            "default": 28.6692
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude",
+            "default": 77.4538
+          },
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/FamilyMember"
+            },
+            "type": "array",
+            "title": "Members"
+          },
+          "commute_mode": {
+            "type": "string",
+            "enum": [
+              "walking",
+              "cycling",
+              "two_wheeler_petrol",
+              "two_wheeler_ev",
+              "car_petrol",
+              "bus_cng",
+              "metro",
+              "none"
+            ],
+            "title": "Commute Mode",
+            "default": "two_wheeler_petrol"
+          },
+          "commute_distance_km": {
+            "type": "number",
+            "maximum": 200.0,
+            "minimum": 0.0,
+            "title": "Commute Distance Km",
+            "default": 10.0
+          },
+          "cooking_fuel": {
+            "type": "string",
+            "enum": [
+              "lpg",
+              "induction",
+              "biomass"
+            ],
+            "title": "Cooking Fuel",
+            "default": "lpg"
+          },
+          "home_type": {
+            "type": "string",
+            "enum": [
+              "standard_closed",
+              "sealed_closed",
+              "leaky_closed",
+              "windows_open"
+            ],
+            "title": "Home Type",
+            "default": "standard_closed"
+          },
+          "has_purifier": {
+            "type": "boolean",
+            "title": "Has Purifier",
+            "default": false
+          },
+          "purifier_cadr": {
+            "type": "number",
+            "maximum": 1500.0,
+            "minimum": 0.0,
+            "title": "Purifier Cadr",
+            "default": 0.0
+          },
+          "budget_band": {
+            "type": "string",
+            "enum": [
+              "zero",
+              "under_1k",
+              "over_5k"
+            ],
+            "title": "Budget Band",
+            "default": "under_1k"
+          }
+        },
+        "type": "object",
+        "title": "HouseholdProfile"
+      },
+      "MemberBudgetSummary": {
+        "properties": {
+          "member_id": {
+            "type": "string",
+            "title": "Member Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "age_band": {
+            "type": "string",
+            "title": "Age Band"
+          },
+          "is_sensitive": {
+            "type": "boolean",
+            "title": "Is Sensitive"
+          },
+          "total_inhaled_dose_ug": {
+            "type": "number",
+            "title": "Total Inhaled Dose Ug"
+          },
+          "time_weighted_avg_pm25": {
+            "type": "number",
+            "title": "Time Weighted Avg Pm25"
+          },
+          "who_budget_ratio": {
+            "type": "number",
+            "title": "Who Budget Ratio"
+          },
+          "india_naaqs_ratio": {
+            "type": "number",
+            "title": "India Naaqs Ratio"
+          },
+          "cigarette_equivalents": {
+            "type": "number",
+            "title": "Cigarette Equivalents"
+          },
+          "heuristic_disclaimer": {
+            "type": "string",
+            "title": "Heuristic Disclaimer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "member_id",
+          "label",
+          "age_band",
+          "is_sensitive",
+          "total_inhaled_dose_ug",
+          "time_weighted_avg_pm25",
+          "who_budget_ratio",
+          "india_naaqs_ratio",
+          "cigarette_equivalents",
+          "heuristic_disclaimer"
+        ],
+        "title": "MemberBudgetSummary"
+      },
+      "PlanRequest": {
+        "properties": {
+          "profile": {
+            "$ref": "#/components/schemas/HouseholdProfile"
+          },
+          "custom_forecast": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Forecast"
+          }
+        },
+        "type": "object",
+        "required": [
+          "profile"
+        ],
+        "title": "PlanRequest"
+      },
+      "PlanResponse": {
+        "properties": {
+          "city": {
+            "type": "string",
+            "title": "City"
+          },
+          "data_as_of": {
+            "type": "string",
+            "title": "Data As Of"
+          },
+          "data_source": {
+            "type": "string",
+            "title": "Data Source"
+          },
+          "is_sample_or_fallback": {
+            "type": "boolean",
+            "title": "Is Sample Or Fallback"
+          },
+          "current_aqi": {
+            "type": "integer",
+            "title": "Current Aqi"
+          },
+          "current_band": {
+            "type": "string",
+            "title": "Current Band"
+          },
+          "active_grap_stage": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active Grap Stage"
+          },
+          "schedules": {
+            "items": {
+              "$ref": "#/components/schemas/ActivityScheduleItem"
+            },
+            "type": "array",
+            "title": "Schedules"
+          },
+          "member_budgets": {
+            "items": {
+              "$ref": "#/components/schemas/MemberBudgetSummary"
+            },
+            "type": "array",
+            "title": "Member Budgets"
+          },
+          "recommendations": {
+            "items": {
+              "$ref": "#/components/schemas/RankedIntervention"
+            },
+            "type": "array",
+            "title": "Recommendations"
+          },
+          "outdoor_worker_advice_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outdoor Worker Advice En"
+          },
+          "outdoor_worker_advice_hi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outdoor Worker Advice Hi"
+          },
+          "outdoor_worker_advice_mr": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outdoor Worker Advice Mr"
+          }
+        },
+        "type": "object",
+        "required": [
+          "city",
+          "data_as_of",
+          "data_source",
+          "is_sample_or_fallback",
+          "current_aqi",
+          "current_band",
+          "active_grap_stage",
+          "schedules",
+          "member_budgets",
+          "recommendations"
+        ],
+        "title": "PlanResponse"
+      },
+      "RankedIntervention": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "tier": {
+            "type": "string",
+            "enum": [
+              "zero",
+              "under_1k",
+              "over_5k"
+            ],
+            "title": "Tier"
+          },
+          "tier_label": {
+            "type": "string",
+            "title": "Tier Label"
+          },
+          "cost_inr": {
+            "type": "number",
+            "title": "Cost Inr"
+          },
+          "name_en": {
+            "type": "string",
+            "title": "Name En"
+          },
+          "name_hi": {
+            "type": "string",
+            "title": "Name Hi"
+          },
+          "name_mr": {
+            "type": "string",
+            "title": "Name Mr"
+          },
+          "description_en": {
+            "type": "string",
+            "title": "Description En"
+          },
+          "description_hi": {
+            "type": "string",
+            "title": "Description Hi"
+          },
+          "description_mr": {
+            "type": "string",
+            "title": "Description Mr"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "dose_saved_pct": {
+            "type": "number",
+            "title": "Dose Saved Pct"
+          },
+          "cost_efficiency_score": {
+            "type": "number",
+            "title": "Cost Efficiency Score"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "tier",
+          "tier_label",
+          "cost_inr",
+          "name_en",
+          "name_hi",
+          "name_mr",
+          "description_en",
+          "description_hi",
+          "description_mr",
+          "category",
+          "dose_saved_pct",
+          "cost_efficiency_score"
+        ],
+        "title": "RankedIntervention"
+      },
+      "SimulateRequest": {
+        "properties": {
+          "profile": {
+            "$ref": "#/components/schemas/HouseholdProfile"
+          },
+          "selected_intervention_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Selected Intervention Ids"
+          },
+          "community_household_count": {
+            "type": "integer",
+            "maximum": 100000.0,
+            "minimum": 1.0,
+            "title": "Community Household Count",
+            "default": 1
+          }
+        },
+        "type": "object",
+        "required": [
+          "profile"
+        ],
+        "title": "SimulateRequest"
+      },
+      "SimulateResponse": {
+        "properties": {
+          "baseline_dose_ug": {
+            "type": "number",
+            "title": "Baseline Dose Ug"
+          },
+          "simulated_dose_ug": {
+            "type": "number",
+            "title": "Simulated Dose Ug"
+          },
+          "dose_reduction_ug": {
+            "type": "number",
+            "title": "Dose Reduction Ug"
+          },
+          "dose_reduction_pct": {
+            "type": "number",
+            "title": "Dose Reduction Pct"
+          },
+          "baseline_cigs": {
+            "type": "number",
+            "title": "Baseline Cigs"
+          },
+          "simulated_cigs": {
+            "type": "number",
+            "title": "Simulated Cigs"
+          },
+          "cigs_saved": {
+            "type": "number",
+            "title": "Cigs Saved"
+          },
+          "cigarette_heuristic_disclaimer": {
+            "type": "string",
+            "title": "Cigarette Heuristic Disclaimer"
+          },
+          "total_cost_inr": {
+            "type": "number",
+            "title": "Total Cost Inr"
+          },
+          "cost_per_ug_reduced_inr": {
+            "type": "number",
+            "title": "Cost Per Ug Reduced Inr"
+          },
+          "pm25_emissions_avoided_g": {
+            "type": "number",
+            "title": "Pm25 Emissions Avoided G"
+          },
+          "co2e_emissions_avoided_kg": {
+            "type": "number",
+            "title": "Co2E Emissions Avoided Kg"
+          },
+          "community_multiplier": {
+            "type": "integer",
+            "title": "Community Multiplier"
+          },
+          "community_pm25_avoided_g": {
+            "type": "number",
+            "title": "Community Pm25 Avoided G"
+          },
+          "community_co2e_avoided_kg": {
+            "type": "number",
+            "title": "Community Co2E Avoided Kg"
+          },
+          "applied_interventions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Applied Interventions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "baseline_dose_ug",
+          "simulated_dose_ug",
+          "dose_reduction_ug",
+          "dose_reduction_pct",
+          "baseline_cigs",
+          "simulated_cigs",
+          "cigs_saved",
+          "cigarette_heuristic_disclaimer",
+          "total_cost_inr",
+          "cost_per_ug_reduced_inr",
+          "pm25_emissions_avoided_g",
+          "co2e_emissions_avoided_kg",
+          "community_multiplier",
+          "community_pm25_avoided_g",
+          "community_co2e_avoided_kg",
+          "applied_interventions"
+        ],
+        "title": "SimulateResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
