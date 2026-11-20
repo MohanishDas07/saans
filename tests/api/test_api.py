@@ -59,8 +59,22 @@ class TestSaansAPIContracts(unittest.TestCase):
         self.assertTrue(air.is_sample_or_fallback)
         self.assertIsNotNone(air.fallback_banner_text)
         self.assertEqual(len(air.hourly_forecast), 24)
-        self.assertTrue(air.current_cpcb_aqi >= 300)  # Severe Ghaziabad winter air
+        self.assertTrue(300 <= air.current_cpcb_aqi <= 500)  # Capped at 500 max
         self.assertEqual(air.dominant_pollutant, "PM2.5")
+
+    def test_air_quality_distant_city_no_silent_substitution(self):
+        """Audit Item 5: Pune or distant cities must NOT silently pretend to be Ghaziabad without warning."""
+        air = get_air_quality_sync(18.52, 73.85, "Pune", force_fallback=True)
+        self.assertIsInstance(air, AirQualityResponse)
+        self.assertEqual(air.city, "Pune")
+        self.assertTrue(air.is_sample_or_fallback)
+        # Must explicitly disclose distance to nearest reference station
+        self.assertTrue(
+            "distance" in air.fallback_banner_text.lower()
+            or "reference" in air.fallback_banner_text.lower()
+            or "nearest" in air.fallback_banner_text.lower()
+        )
+        self.assertTrue("km" in air.fallback_banner_text.lower())
 
     def test_plan_contract_with_demo_persona(self):
         # Demo Persona: Ghaziabad household with 2 adults, 9-yr sensitive child, 68-yr senior

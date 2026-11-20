@@ -2,20 +2,35 @@
 Unified Test Runner for SAANS Engine and API Test Suites.
 """
 
+import os
 import sys
 import unittest
 
 
 def run_all_tests():
+    root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    tests_dir = os.path.abspath(os.path.dirname(__file__))
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
 
     # Discover engine tests
-    suite_engine = loader.discover("tests/engine", pattern="test_*.py")
+    suite_engine = loader.discover(
+        start_dir=os.path.join(tests_dir, "engine"),
+        pattern="test_*.py",
+        top_level_dir=root_dir,
+    )
     # Discover api tests
-    suite_api = loader.discover("tests/api", pattern="test_*.py")
+    suite_api = loader.discover(
+        start_dir=os.path.join(tests_dir, "api"),
+        pattern="test_*.py",
+        top_level_dir=root_dir,
+    )
     # Discover evaluation harness tests
-    suite_eval = loader.discover("tests/eval", pattern="test_*.py")
+    suite_eval = loader.discover(
+        start_dir=os.path.join(tests_dir, "eval"),
+        pattern="test_*.py",
+        top_level_dir=root_dir,
+    )
 
     suite.addTests(suite_engine)
     suite.addTests(suite_api)

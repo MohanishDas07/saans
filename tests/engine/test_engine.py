@@ -78,10 +78,27 @@ class TestCPCBAQI(unittest.TestCase):
         self.assertEqual(band_30.code, "good")
         self.assertEqual(aqi_30, 50)
 
-        # Beyond 500 ug/m3
+        # Beyond 500 ug/m3: CPCB tops out at 500
         aqi_extreme, band_ext = calculate_sub_index(600.0, PM25_BREAKPOINTS)
         self.assertEqual(band_ext.code, "severe")
-        self.assertTrue(aqi_extreme >= 500)
+        self.assertEqual(aqi_extreme, 500)
+
+    def test_aqi_capped_at_500_for_extreme_concentrations(self):
+        """Audit Item 7: CPCB index tops out at 500. Verify 450, 500, and 700 ug/m3."""
+        # 450 ug/m3 -> Severe, between 401 and 500
+        aqi_450, band_450 = calculate_sub_index(450.0, PM25_BREAKPOINTS)
+        self.assertEqual(band_450.code, "severe")
+        self.assertTrue(450 <= aqi_450 <= 500)
+
+        # 500 ug/m3 -> exactly 500
+        aqi_500, band_500 = calculate_sub_index(500.0, PM25_BREAKPOINTS)
+        self.assertEqual(band_500.code, "severe")
+        self.assertEqual(aqi_500, 500)
+
+        # 700 ug/m3 -> MUST be capped at 500 (never 579 or 627)
+        aqi_700, band_700 = calculate_sub_index(700.0, PM25_BREAKPOINTS)
+        self.assertEqual(band_700.code, "severe")
+        self.assertEqual(aqi_700, 500)
 
     def test_overall_cpcb_composite(self):
         # PM2.5 is dominant

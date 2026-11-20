@@ -4,6 +4,7 @@ Provides deterministic air quality, exposure calculation, and simulation endpoin
 """
 
 import logging
+import os
 import sys
 
 from fastapi import FastAPI
@@ -48,6 +49,12 @@ class SecurityHeadersMiddleware:
                 headers.append(
                     (b"permissions-policy", b"geolocation=(self), microphone=(self)")
                 )
+                headers.append(
+                    (
+                        b"content-security-policy",
+                        b"default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https: http:; frame-ancestors 'none';",
+                    )
+                )
                 message["headers"] = headers
             await send(message)
 
@@ -56,13 +63,12 @@ class SecurityHeadersMiddleware:
 
 app.add_middleware(SecurityHeadersMiddleware)
 
-# Strict CORS Allowlist
-ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-]
+# Strict CORS Allowlist (Read from environment for containerized & hosted deployments)
+raw_origins = os.environ.get(
+    "ALLOWED_ORIGINS",
+    "http://localhost:3000,http://127.0.0.1:3000,http://localhost:8000,http://127.0.0.1:8000",
+)
+ALLOWED_ORIGINS = [o.strip() for o in raw_origins.split(",") if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,

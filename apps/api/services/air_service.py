@@ -5,10 +5,11 @@ Implements Open-Meteo API integration with 0.1° spatial rounding and robust off
 
 import json
 import logging
+import math
 import os
 import sqlite3
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import httpx
@@ -34,6 +35,21 @@ DB_PATH = CACHE_DIR / "saans_cache.sqlite3"
 FIXTURES_DIR = Path(__file__).resolve().parent.parent / "data" / "fixtures"
 
 TTL_SECONDS = 15 * 60  # 15 minutes TTL
+
+
+def calculate_distance_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Haversine distance in km between two coordinate pairs."""
+    R = 6371.0
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = (
+        math.sin(dlat / 2) ** 2
+        + math.cos(math.radians(lat1))
+        * math.cos(math.radians(lat2))
+        * math.sin(dlon / 2) ** 2
+    )
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    return R * c
 
 
 def get_db_connection() -> sqlite3.Connection:
@@ -71,45 +87,29 @@ def round_coords(lat: float, lon: float) -> tuple[float, float]:
     return round(lat, 1), round(lon, 1)
 
 
-def load_fixture_for_city(city_query: str) -> dict | None:
-    """Loads a labeled offline fixture JSON file if matching known cities."""
-    q = city_query.strip().lower()
-    fixture_map = {
-        "ghaziabad": FIXTURES_DIR / "ghaziabad.json",
-        "delhi": FIXTURES_DIR / "delhi.json",
-        "lucknow": FIXTURES_DIR / "lucknow.json",
-    }
-    for key, path in fixture_map.items():
-        if key in q and path.exists():
-            with open(path, "r", encoding="utf-8") as f:
-                return json.load(f)
-
-    # Default fallback is Ghaziabad demo fixture
-    default_path = FIXTURES_DIR / "ghaziabad.json"
-    if default_path.exists():
-        with open(default_path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return None
-
-
-def find_closest_fixture(lat: float, lon: float) -> dict:
-    """Finds the closest labeled fixture among Ghaziabad, Delhi, and Lucknow."""
+def find_closest_fixture(lat: float, lon: float) -> tuple[dict, str, float]:
+    """
+    Finds the closest labeled fixture among Ghaziabad, Delhi, and Lucknow.
+    Returns (fixture_data, nearest_city_name, distance_km).
+    """
     fixtures = [
-        (28.6692, 77.4538, FIXTURES_DIR / "ghaziabad.json"),
-        (28.6139, 77.2090, FIXTURES_DIR / "delhi.json"),
-        (26.8467, 80.9462, FIXTURES_DIR / "lucknow.json"),
+        (28.6692, 77.4538, "Ghaziabad", FIXTURES_DIR / "ghaziabad.json"),
+        (28.6139, 77.2090, "Delhi", FIXTURES_DIR / "delhi.json"),
+        (26.8467, 80.9462, "Lucknow", FIXTURES_DIR / "lucknow.json"),
     ]
-    # Simple squared euclidean distance in degrees
-    best_file = fixtures[0][2]
-    best_dist = float("inf")
-    for f_lat, f_lon, path in fixtures:
-        d = (lat - f_lat) ** 2 + (lon - f_lon) ** 2
-        if d < best_dist and path.exists():
-            best_dist = d
+    best_file = fixtures[0][3]
+    best_city = fixtures[0][2]
+    best_dist_km = float("inf")
+
+    for f_lat, f_lon, c_name, path in fixtures:
+        d_km = calculate_distance_km(lat, lon, f_lat, f_lon)
+        if d_km < best_dist_km and path.exists():
+            best_dist_km = d_km
             best_file = path
+            best_city = c_name
 
     with open(best_file, "r", encoding="utf-8") as f:
-        return json.load(f)
+        return json.load(f), best_city, best_dist_km
 
 
 def search_city_geocoding_sync(query: str) -> GeocodeResponse:
@@ -254,7 +254,10 @@ async def search_city_geocoding(query: str) -> GeocodeResponse:
 
 
 def _build_response_from_fixture(
-    fixture_data: dict, city_override: str | None = None
+    fixture_data: dict,
+    city_override: str | None = None,
+    nearest_city: str | None = None,
+    distance_km: float = 0.0,
 ) -> AirQualityResponse:
     hourly_points: list[HourlyAirPoint] = []
     hourly_raw = fixture_data.get("hourly", [])
@@ -282,12 +285,14 @@ def _build_response_from_fixture(
             )
         )
 
-    # Current values taken from first available or midday reading
-    current_pt = (
-        hourly_points[8]
-        if len(hourly_points) > 8
-        else (hourly_points[0] if hourly_points else None)
+    # Current hour selected according to local IST time (UTC + 5:30)
+    now_utc = datetime.now(timezone.utc)
+    ist_hour = (now_utc + timedelta(hours=5, minutes=30)).hour
+    current_pt = next(
+        (p for p in hourly_points if p.hour == ist_hour),
+        (hourly_points[0] if hourly_points else None),
     )
+
     current_aqi = current_pt.cpcb_aqi if current_pt else 450
     current_band = current_pt.aqi_band_code if current_pt else "severe"
     current_color = current_pt.aqi_color_hex if current_pt else "#7A0F2E"
@@ -305,8 +310,38 @@ def _build_response_from_fixture(
             citizen_advisory=grap_obj.citizen_advisory_en,
         )
 
+    display_city = city_override or fixture_data.get("city", "Ghaziabad")
+    ref_city = nearest_city or fixture_data.get("city", "Ghaziabad")
+
+    if distance_km > 150.0:
+        banner = (
+            f"OFFLINE SAMPLE REFERENCE: No active monitoring station data in {display_city}. "
+            f"Displaying regional reference snapshot from {ref_city} ({int(distance_km)} km away)."
+        )
+        src = f"Regional Sample: {ref_city} Station ({int(distance_km)} km away)"
+        verdict_en = (
+            f"No live monitoring station in {display_city}. Nearest regional reference station is "
+            f"{ref_city} ({int(distance_km)} km away, estimated AQI {current_aqi})."
+        )
+        verdict_hi = (
+            f"{display_city} में कोई सक्रिय स्टेशन नहीं है। निकटतम संदर्भ स्टेशन "
+            f"{ref_city} ({int(distance_km)} किमी दूर, अनुमानित AQI {current_aqi}) है।"
+        )
+        verdict_mr = (
+            f"{display_city} येथे सक्रिय केंद्र उपलब्ध नाही. सर्वात जवळचे संदर्भ केंद्र "
+            f"{ref_city} ({int(distance_km)} किमी अंतरावर, अंदाजे AQI {current_aqi}) आहे."
+        )
+    else:
+        banner = (
+            f"RECORDED SAMPLE: {ref_city} Reference Station (17 Nov 2026 Snapshot)."
+        )
+        src = f"Recorded Reference: {ref_city} Station"
+        verdict_en = f"Estimated air quality in {display_city} is {current_band.replace('_', ' ').title()} (AQI {current_aqi})."
+        verdict_hi = f"{display_city} में अनुमानित वायु गुणवत्ता {current_band.replace('_', ' ').title()} (AQI {current_aqi}) है।"
+        verdict_mr = f"{display_city} मधील अंदाजे हवेची गुणवत्ता {current_band.replace('_', ' ').title()} (AQI {current_aqi}) आहे."
+
     return AirQualityResponse(
-        city=city_override or fixture_data.get("city", "Ghaziabad"),
+        city=display_city,
         state=fixture_data.get("state", "Uttar Pradesh"),
         country=fixture_data.get("country", "India"),
         latitude=float(fixture_data.get("latitude", 28.6692)),
@@ -317,17 +352,15 @@ def _build_response_from_fixture(
         current_aqi_band=current_band,
         current_aqi_color=current_color,
         dominant_pollutant="PM2.5",
-        one_sentence_verdict_en=f"Air quality in {city_override or fixture_data.get('city')} is {current_band.replace('_', ' ').title()} (AQI {current_aqi}). Minimize outdoor exposure and keep indoor air sealed.",
-        one_sentence_verdict_hi=f"{city_override or fixture_data.get('city')} में वायु गुणवत्ता {current_band.replace('_', ' ').title()} (AQI {current_aqi}) है। बाहर जाने से बचें और कमरे बंद रखें।",
-        one_sentence_verdict_mr=f"{city_override or fixture_data.get('city')} मधील हवेची गुणवत्ता {current_band.replace('_', ' ').title()} (AQI {current_aqi}) आहे. घराबाहेर पडणे टाळा.",
+        one_sentence_verdict_en=verdict_en,
+        one_sentence_verdict_hi=verdict_hi,
+        one_sentence_verdict_mr=verdict_mr,
         data_as_of=fixture_data.get(
             "data_as_of", datetime.now(timezone.utc).isoformat()
         ),
-        data_source=fixture_data.get(
-            "data_source", "Open-Meteo Air Quality Archive & CPCB Reference Snapshot"
-        ),
+        data_source=src,
         is_sample_or_fallback=True,
-        fallback_banner_text="SAMPLE / OFFLINE FALLBACK DATA: Demonstrating resilient behavior using labeled winter smog reference fixtures.",
+        fallback_banner_text=banner,
         active_grap_stage=grap_info,
         hourly_forecast=hourly_points,
     )
@@ -342,8 +375,13 @@ def get_air_quality_sync(
     """
     Synchronous air quality retrieval for offline/fixture evaluations and test execution.
     """
-    fixture = find_closest_fixture(latitude, longitude)
-    return _build_response_from_fixture(fixture, city_override=city_name)
+    fixture, nearest_city, distance_km = find_closest_fixture(latitude, longitude)
+    return _build_response_from_fixture(
+        fixture,
+        city_override=city_name,
+        nearest_city=nearest_city,
+        distance_km=distance_km,
+    )
 
 
 async def get_air_quality(
@@ -397,11 +435,15 @@ async def get_air_quality(
 
                     points: list[HourlyAirPoint] = []
                     for idx, t in enumerate(times[:24]):
-                        val_25 = (
-                            float(pm25_vals[idx])
-                            if idx < len(pm25_vals) and pm25_vals[idx] is not None
-                            else 150.0
-                        )
+                        if idx >= len(pm25_vals) or pm25_vals[idx] is None:
+                            # Never invent arbitrary numbers; forward-fill if available
+                            if points:
+                                val_25 = points[-1].pm2_5
+                            else:
+                                continue
+                        else:
+                            val_25 = float(pm25_vals[idx])
+
                         val_10 = (
                             float(pm10_vals[idx])
                             if idx < len(pm10_vals) and pm10_vals[idx] is not None
@@ -427,7 +469,14 @@ async def get_air_quality(
                             )
                         )
 
-                    cur = points[0] if points else None
+                    # Select point corresponding to current local hour
+                    utc_offset = api_data.get("utc_offset_seconds", 19800)
+                    now_utc = datetime.now(timezone.utc)
+                    local_hour = (now_utc + timedelta(seconds=utc_offset)).hour
+                    cur = next(
+                        (p for p in points if p.hour == local_hour),
+                        (points[0] if points else None),
+                    )
                     cur_aqi = cur.cpcb_aqi if cur else 150
                     cur_band = cur.aqi_band_code if cur else "moderate"
                     cur_color = cur.aqi_color_hex if cur else "#F2C200"
@@ -476,5 +525,10 @@ async def get_air_quality(
             )
 
     # Resilient offline fixture fallback
-    fixture = find_closest_fixture(latitude, longitude)
-    return _build_response_from_fixture(fixture, city_override=city_name)
+    fixture, nearest_city, distance_km = find_closest_fixture(latitude, longitude)
+    return _build_response_from_fixture(
+        fixture,
+        city_override=city_name,
+        nearest_city=nearest_city,
+        distance_km=distance_km,
+    )

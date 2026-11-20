@@ -6,7 +6,7 @@ Delivers real-time Server-Sent Events (SSE) streaming with citations and safety 
 import json
 from typing import Literal
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
 from llm import get_llm_service
 from pydantic import BaseModel, Field
@@ -36,13 +36,14 @@ class ChatSyncResponse(BaseModel):
 
 
 @router.post("/chat")
-async def chat_stream_endpoint(req: ChatRequest):
+async def chat_stream_endpoint(req: ChatRequest, request: Request):
     """
     Server-Sent Events (SSE) streaming endpoint for Ask Saans.
     Emits token chunks, executed tool summaries, and citations in real time.
     """
     llm_service = get_llm_service()
     profile_dict = req.profile.model_dump() if req.profile else None
+    client_ip = request.client.host if request.client else "127.0.0.1"
 
     async def event_generator():
         async for event in llm_service.stream_chat(
@@ -50,6 +51,7 @@ async def chat_stream_endpoint(req: ChatRequest):
             profile_data=profile_dict,
             language=req.language,
             simplify_for_child=req.simplify_for_child,
+            client_ip=client_ip,
         ):
             payload = json.dumps(event, ensure_ascii=False)
             yield f"data: {payload}\n\n"
@@ -58,12 +60,13 @@ async def chat_stream_endpoint(req: ChatRequest):
 
 
 @router.post("/chat/sync", response_model=ChatSyncResponse)
-async def chat_sync_endpoint(req: ChatRequest):
+async def chat_sync_endpoint(req: ChatRequest, request: Request):
     """
     Synchronous fallback endpoint returning the complete grounded reply and citations.
     """
     llm_service = get_llm_service()
     profile_dict = req.profile.model_dump() if req.profile else None
+    client_ip = request.client.host if request.client else "127.0.0.1"
 
     collected_tokens = []
     is_emergency = False
@@ -74,6 +77,7 @@ async def chat_sync_endpoint(req: ChatRequest):
         profile_data=profile_dict,
         language=req.language,
         simplify_for_child=req.simplify_for_child,
+        client_ip=client_ip,
     ):
         evt_type = event.get("event")
         data = event.get("data", {})

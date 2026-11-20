@@ -148,8 +148,8 @@
     "title": "Myth Buster: Indoor Plants Do Not Filter Fine Particulate Smog",
     "publisher": "Drexel University / Nature Journal of Exposure Science",
     "url": "https://www.nature.com/articles/s41370-019-0175-9",
-    "retrieval_date": "2026-11-17",
-    "text": "Common house plants (snake plant, areca palm, money plant) cannot filter airborne fine particulate matter (PM2.5). While plants can metabolize trace VOCs under controlled lab conditions over days, their Clean Air Delivery Rate for particles is practically zero. A single room would require 10 to 100 plants per square meter to match one mechanical purifier.",
+    "retrieval_date": "2026-11-20",
+    "text": "Common house plants (snake plant, areca palm, money plant) cannot filter airborne fine particulate matter (PM2.5). Peer-reviewed research (Cummings & Waring, 2020) demonstrated that matching building air exchange requires 10 to 1000 plants per square meter for VOCs, while their Clean Air Delivery Rate for particulate matter is practically zero. Only True HEPA filtration removes PM2.5.",
     "tags": ["myth", "plants", "areca_palm", "snake_plant", "filter_myth"]
   },
   {
@@ -262,10 +262,10 @@
   },
   {
     "id": "medical-triage-redlines",
-    "title": "Emergency Warning Signs: Acute Respiratory Distress Requiring Immediate Care",
-    "publisher": "Emergency Medicine Association of India (EMAI)",
-    "url": "https://emai.in/clinical-guidelines-asthma-emergency",
-    "retrieval_date": "2026-11-17",
+    "title": "Emergency Warning Signs for Severe Respiratory and Asthma Distress",
+    "publisher": "Ministry of Health and Family Welfare (MoHFW) / National Health Mission",
+    "url": "https://www.nhp.gov.in/disease/respiratory/asthma",
+    "retrieval_date": "2026-11-20",
     "text": "Digital air quality assistants must never offer medical diagnosis. Individuals experiencing severe breathlessness, inability to speak full sentences, audible wheezing in young children, chest pain, blue-tinged lips or fingernails, or confusion must immediately seek emergency medical attention (Call 112/102 or visit the nearest hospital emergency room).",
     "tags": ["medical_triage", "emergency", "redlines", "asthma_attack", "safety"]
   }

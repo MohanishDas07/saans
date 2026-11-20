@@ -26,14 +26,14 @@ This document specifies the localization architecture, translation coverage, hum
 
 | Domain | Key Prefix | English | Hindi Review Status | Marathi Review Status |
 | :--- | :--- | :--- | :--- | :--- |
-| **Navigation** | `nav.*` | Complete | Human Verified (Native Speaker) | Human Verified (Native Speaker) |
-| **Landing Hero** | `landing.*` | Complete | Human Verified | Human Verified |
-| **Household Onboarding** | `onboarding.*` | Complete | Human Verified | Human Verified |
-| **Your Day Dashboard** | `your_day.*` | Complete | Human Verified | Human Verified |
-| **What-If Simulator** | `simulate.*` | Complete | Human Verified | Human Verified |
-| **Ask Saans AI Assistant** | `chat.*` | Complete | Human Verified | Human Verified |
-| **Home Air Lab** | `lab.*` | Complete | Human Verified | Human Verified |
-| **Community Advisory** | `community.*` | Complete | Human Verified | Human Verified |
+| **Navigation & Core UI** | `nav.*` | Complete | Core Terms Verified | Core Terms Verified |
+| **Landing Hero** | `landing.*` | Complete | Core Headings Verified | Core Headings Verified |
+| **Household Onboarding** | `onboarding.*` | Complete | Form Field Strings Localized | Form Field Strings Localized |
+| **Your Day Dashboard** | `your_day.*` | Complete | Key Metrics Localized | Key Metrics Localized |
+| **What-If Simulator** | `simulate.*` | Complete | Action Labels Localized | Action Labels Localized |
+| **Ask Saans AI Assistant** | `chat.*` | Complete | Golden Evals Verified | Golden Evals Verified |
+| **Home Air Lab** | `lab.*` | Complete | Myth Summaries Localized | Myth Summaries Localized |
+| **Community Advisory** | `community.*` | Complete | Bulletin Templates Localized | Bulletin Templates Localized |
 | **Medical Emergency** | `safety.*` | Complete | **CRITICAL VERIFIED (Static)** | **CRITICAL VERIFIED (Static)** |
 
 ---

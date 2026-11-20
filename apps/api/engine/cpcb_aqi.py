@@ -128,13 +128,10 @@ def calculate_sub_index(
             sub_index = max(band.i_lo, min(band.i_hi, sub_index))
             return int(sub_index), band
 
-    # Beyond upper breakpoint (Severe+)
+    # Beyond upper breakpoint (Severe+ / > 500 ug/m^3)
+    # The official CPCB National Air Quality Index tops out at 500.
     last = breakpoints[-1]
-    # For extreme values beyond 500 ug/m^3, extrapolate or clamp to 500
-    ratio = (last.i_hi - last.i_lo) / (last.c_hi - last.c_lo)
-    extrapolated = round(ratio * (concentration - last.c_lo) + last.i_lo)
-    # CPCB scale standard caps at 500, but can reflect 500+ severe in code
-    return max(500, int(extrapolated)), last
+    return 500, last
 
 
 def get_overall_cpcb_aqi(

@@ -380,6 +380,96 @@ class TestGoldenEvaluationHarness(unittest.TestCase):
             f"\n[EVALUATION HARNESS] All {passed_count}/{total_count} golden test cases passed cleanly!"
         )
 
+    def test_audit_regression_probes(self):
+        """
+        Audit Item 2 & 3: Direct regression tests for audit probes:
+        - Gurugram routing vs jaggery
+        - 'figure' routing vs jaggery
+        - 'cut' commute vs simulation hijacking
+        - Asthmatic father at 6am safety advice
+        - 'breathless' emergency detection
+        - 'not wheezing' negation handling without emergency blockage
+        """
+        # Probe 1: Gurugram air quality (Must not return jaggery myth)
+        tokens = []
+        is_emerg = False
+        for evt in self.llm_service.stream_chat_sync(
+            "What is the air like in Gurugram today?"
+        ):
+            if evt["event"] == "token":
+                tokens.append(evt["data"]["token"])
+            elif evt["event"] == "medical_intercept":
+                is_emerg = True
+        reply = "".join(tokens).lower()
+        self.assertFalse(is_emerg)
+        self.assertNotIn("jaggery", reply)
+        self.assertNotIn("digestive", reply)
+        self.assertIn("gurugram", reply)
+
+        # Probe 2: "Can you figure out the best time to walk?" (Must not match 'gur' in figure)
+        tokens = []
+        for evt in self.llm_service.stream_chat_sync(
+            "Can you figure out the best time to walk?"
+        ):
+            if evt["event"] == "token":
+                tokens.append(evt["data"]["token"])
+        reply = "".join(tokens).lower()
+        self.assertNotIn("jaggery", reply)
+        self.assertNotIn("digestive", reply)
+        self.assertTrue("scheduler" in reply or "shift" in reply or "walk" in reply)
+
+        # Probe 3: Purifier vs cut commute (Must address trade-off, not raw single-sided simulate)
+        tokens = []
+        for evt in self.llm_service.stream_chat_sync(
+            "Should I buy an air purifier or just cut my commute?"
+        ):
+            if evt["event"] == "token":
+                tokens.append(evt["data"]["token"])
+        reply = "".join(tokens).lower()
+        self.assertIn("purifier", reply)
+        self.assertTrue("commute" in reply or "transit" in reply or "metro" in reply)
+
+        # Probe 4: Asthmatic father 6am walk (Must explicitly state NOT safe and mention inversion)
+        tokens = []
+        for evt in self.llm_service.stream_chat_sync(
+            "Is it safe to take my asthmatic father for a walk at 6am?"
+        ):
+            if evt["event"] == "token":
+                tokens.append(evt["data"]["token"])
+        reply = "".join(tokens).lower()
+        self.assertTrue("not safe" in reply)
+        self.assertTrue("inversion" in reply)
+
+        # Probe 5: Breathless daughter (Must trigger emergency redline)
+        is_emerg = False
+        for evt in self.llm_service.stream_chat_sync(
+            "My daughter is breathless after school, what should I do?"
+        ):
+            if evt["event"] == "medical_intercept":
+                is_emerg = True
+        self.assertTrue(
+            is_emerg,
+            "Acute 'breathless' must trigger static medical emergency intercept",
+        )
+
+        # Probe 6: Not wheezing, just coughing (Negation must NOT trigger emergency intercept)
+        tokens = []
+        is_emerg = False
+        for evt in self.llm_service.stream_chat_sync(
+            "My child is not wheezing, just coughing"
+        ):
+            if evt["event"] == "token":
+                tokens.append(evt["data"]["token"])
+            elif evt["event"] == "medical_intercept":
+                is_emerg = True
+        self.assertFalse(
+            is_emerg, "'not wheezing' should not trigger emergency intercept"
+        )
+        reply = "".join(tokens).lower()
+        self.assertTrue("cough" in reply)
+        # Verify it does NOT cheerful schedule
+        self.assertNotIn("recommends shifting flexible outdoor activities", reply)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -21,31 +21,39 @@ from services.air_service import get_air_quality_sync
 
 
 def tool_get_air(
-    city: str = "Ghaziabad", lat: float = 28.6692, lon: float = 77.4538
+    city: str = "Ghaziabad",
+    lat: float = 28.6692,
+    lon: float = 77.4538,
+    force_fallback: bool = False,
 ) -> dict[str, Any]:
     """Retrieves current CPCB AQI, PM2.5 concentration, and active CAQM GRAP stage."""
     res = get_air_quality_sync(
-        latitude=lat, longitude=lon, city_name=city, force_fallback=True
+        latitude=lat, longitude=lon, city_name=city, force_fallback=force_fallback
     )
     return {
         "city": res.city,
         "current_cpcb_aqi": res.current_cpcb_aqi,
         "current_pm2_5": res.current_pm2_5,
         "aqi_band": res.current_aqi_band,
-        "active_grap_stage": res.active_grap_stage.stage_number
-        if res.active_grap_stage
-        else None,
+        "active_grap_stage": (
+            res.active_grap_stage.stage_number if res.active_grap_stage else None
+        ),
         "one_sentence_verdict_en": res.one_sentence_verdict_en,
         "one_sentence_verdict_hi": res.one_sentence_verdict_hi,
         "one_sentence_verdict_mr": res.one_sentence_verdict_mr,
+        "is_sample_or_fallback": res.is_sample_or_fallback,
+        "data_source": res.data_source,
     }
 
 
-def tool_get_day_plan(profile_data: dict[str, Any] | None = None) -> dict[str, Any]:
+def tool_get_day_plan(
+    profile_data: dict[str, Any] | None = None,
+    force_fallback: bool = False,
+) -> dict[str, Any]:
     """Computes personalized schedule optimization and member Breath Budgets."""
     prof = HouseholdProfile(**profile_data) if profile_data else HouseholdProfile()
     air = get_air_quality_sync(
-        prof.latitude, prof.longitude, prof.city_name, force_fallback=True
+        prof.latitude, prof.longitude, prof.city_name, force_fallback=force_fallback
     )
 
     hourly_pm25 = [p.pm2_5 for p in air.hourly_forecast]

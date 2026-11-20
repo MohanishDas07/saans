@@ -5,11 +5,51 @@ and numeric traceability. Runs completely offline in CI and local test environme
 """
 
 import asyncio
+import re
 from collections.abc import AsyncGenerator, Generator
 from typing import Any
 
+from .safety import detect_mild_respiratory_distress
 from .tools import execute_tool
-from .traceability import verify_numeric_traceability
+from .traceability import (
+    build_failclosed_template,
+    extract_numbers_from_text,
+    verify_numeric_traceability,
+)
+
+KNOWN_CITIES = [
+    "gurugram",
+    "gurgaon",
+    "delhi",
+    "noida",
+    "ghaziabad",
+    "faridabad",
+    "pune",
+    "bengaluru",
+    "bangalore",
+    "mumbai",
+    "lucknow",
+    "kolkata",
+    "chennai",
+    "hyderabad",
+    "jaipur",
+    "chandigarh",
+    "patna",
+    "agra",
+    "kanpur",
+]
+
+
+def extract_city_from_query(query: str) -> str | None:
+    q_lower = query.lower()
+    for c in KNOWN_CITIES:
+        if re.search(r"\b" + re.escape(c) + r"\b", q_lower):
+            if c in ("gurugram", "gurgaon"):
+                return "Gurugram"
+            if c in ("bengaluru", "bangalore"):
+                return "Bengaluru"
+            return c.capitalize()
+    return None
 
 
 class MockLLM:
@@ -33,25 +73,12 @@ class MockLLM:
         # 1. Intent Detection and Tool Execution
         # -------------------------------------------------------------------
 
-        # Myth intent: plants, jaggery, steam, cloth mask, diffusers
-        if any(
-            w in q_lower
-            for w in [
-                "plant",
-                "plants",
-                "snake plant",
-                "areca",
-                "पौधे",
-                "पौधों",
-                "झाडे",
-                "झाड",
-                "प्लांट",
-                "स्नेक",
-            ]
-        ):
+        # Distress Check: Mild respiratory distress or negated distress (e.g. coughing, not wheezing)
+        # Rule: NEVER send a cheerful outdoor walk or scheduling reply after a distress word!
+        if detect_mild_respiratory_distress(query):
             res = execute_tool(
                 "lookup_guidance",
-                {"query": "myth indoor plants filter smog", "top_k": 2},
+                {"query": "pediatric respiratory smog irritation coughing", "top_k": 2},
             )
             tool_results.append(res)
             chunk = res["results"][0]
@@ -65,34 +92,124 @@ class MockLLM:
 
             if language == "hi":
                 narrative = (
-                    f"वैज्ञानिक शोध के अनुसार, इनडोर पौधे (जैसे स्नेक प्लांट या मनी प्लांट) हवा से "
-                    f"सूक्ष्म प्रदूषण कणों (PM2.5) को नहीं छान सकते [{chunk['source_id']}]। "
-                    f"पौधे केवल कुछ गैसों (VOCs) को धीरे-धीरे सोखते हैं। एक कमरे में मैकेनिकल HEPA प्यूरीफायर "
-                    f"की बराबरी करने के लिए प्रति वर्ग मीटर 10 से 100 पौधों की आवश्यकता होगी, जो व्यावहारिक नहीं है।"
+                    f"धुएं और प्रदूषण के दौरान खांसी श्वसन तंत्र की प्राकृतिक रक्षा प्रतिक्रिया है [{chunk['source_id']}]। "
+                    f"बच्चे को घर के अंदर एक बंद, साफ और फिल्टर किए गए कमरे में रखें। गुनगुना पानी पिलाएं और किसी भी प्रकार की शारीरिक दौड़-भाग से बचाएं। "
+                    f"सावधानी: यदि सांस फूलने लगे, सीने में जकड़न हो, होंठ नीले पड़ने लगें या अत्यधिक सुस्ती आए, तो तुरंत आपातकालीन चिकित्सा सहायता (112 या 102) लें।"
                 )
             elif language == "mr":
                 narrative = (
-                    f"वैज्ञानिक अभ्यासानुसार, घरातील झाडे सूक्ष्म प्रदूषण कण (PM2.5) गाळू शकत नाहीत [{chunk['source_id']}]. "
-                    f"झाडे फक्त काही वायू हळूहळू शोषून घेतात आणि हवा पूर्णपणे शुद्ध करू शकत नाहीत. एका खोलीत हेपा प्युरिफायरसारखी हवा शुद्ध करण्यासाठी "
-                    f"दर चौरस मीटरला १० ते १०० झाडांची गरज पडेल, जे शक्य नाही."
+                    f"प्रदूषणामुळे येणारा खोकला ही श्वसनमार्गाची नैसर्गिक प्रतिक्रिया आहे [{chunk['source_id']}]. "
+                    f"मुलाला घरात बंद आणि स्वच्छ हवेच्या खोलीत ठेवा. कोमट पाणी प्यायला द्या आणि धावपळ टाळा. "
+                    f"महत्त्वाची सूचना: धाप लागणे, घरघर, छातीत दुखणे अशी लक्षणे दिसल्यास त्वरित ११२ किंवा १०२ वर संपर्क साधा."
                 )
             else:
-                if simplify_for_child:
-                    narrative = (
-                        f"Plants are awesome for looking green and making fresh oxygen during the day, "
-                        f"but they cannot catch the microscopic dirty smog specks [{chunk['source_id']}]. "
-                        f"To clean a single bedroom, you would need so many plants that there wouldn't even be room for your bed! "
-                        f"Only a real mechanical air purifier with a HEPA filter can trap fine PM2.5 particles."
-                    )
-                else:
-                    narrative = (
-                        f"Scientific consensus confirms that indoor house plants cannot filter fine particulate smog (PM2.5) [{chunk['source_id']}]. "
-                        f"While plants absorb trace volatile organic compounds in closed lab chambers, their Clean Air Delivery Rate (CADR) for particles is practically zero. "
-                        f"Matching one mechanical HEPA purifier would require 10 to 100 plants per square meter. "
-                        f"Do not rely on plants as a smog defense."
-                    )
+                narrative = (
+                    f"For coughing or airway irritation during smog episodes: Inhaled fine particulates cause direct bronchial surface irritation [{chunk['source_id']}]. "
+                    f"Keep the child indoors in a sealed room with active mechanical HEPA filtration or damp-mopped surfaces, offer warm fluids for airway hydration, and suspend physical exertion. "
+                    f"Safety Watch: If acute red-line symptoms emerge—such as audible wheezing, rapid breathlessness, chest tightness, or blue-tinged lips—seek immediate emergency medical care (dial 112 / 102)."
+                )
 
-        elif any(w in q_lower for w in ["jaggery", "gur", "gud", "गुड़", "गूळ"]):
+        # Vulnerable family members (asthmatic / elderly) morning walk query
+        elif bool(
+            re.search(
+                r"\b(asthma|asthmatic|father|dad|mother|mom|parent|elderly|senior|dada|dadi)\b",
+                q_lower,
+            )
+        ) and bool(
+            re.search(
+                r"\b(walk|walking|morning|6\s*am|7\s*am|exercise|jog|jogging)\b",
+                q_lower,
+            )
+        ):
+            res_air = execute_tool(
+                "get_air",
+                {
+                    "city": extract_city_from_query(query)
+                    or (profile_data.get("city_name") if profile_data else "Ghaziabad")
+                },
+            )
+            res_guide = execute_tool(
+                "lookup_guidance",
+                {
+                    "query": "elderly cardiac asthmatic winter inversion walk n95",
+                    "top_k": 3,
+                },
+            )
+            tool_results.extend([res_air, res_guide])
+            citations.append(
+                {
+                    "id": "elderly-and-cardiac-risk",
+                    "title": "Senior Citizens: Cardiovascular and Cerebrovascular Smog Risks",
+                    "publisher": "Cardiological Society of India (CSI)",
+                }
+            )
+            citations.append(
+                {
+                    "id": "winter-thermal-inversion",
+                    "title": "Meteorological Inversion and Diurnal Smog Cycles in Indo-Gangetic Plains",
+                    "publisher": "India Meteorological Department (IMD) & SAFAR",
+                }
+            )
+
+            narrative = (
+                "No, it is NOT safe to take an asthmatic or elderly family member for an outdoor walk at 6:00 AM during winter smog [elderly-and-cardiac-risk, winter-thermal-inversion]. "
+                "Early morning coincides with surface temperature inversion, trapping peak PM2.5 concentrations at breathing level. Cold polluted air triggers severe bronchospasm in asthmatics and blood pressure spikes in seniors. "
+                "Keep them indoors in a filtered room during the morning. If they wish to exercise, shift walking indoors or wait until the 12 PM - 4 PM afternoon window when solar heating dilutes ground-level smog, and ensure they wear an ISI-certified N95 mask."
+            )
+
+        # Trade-off comparison: Purifier vs Commute / cutting commute
+        elif (
+            bool(re.search(r"\b(purifier|hepa|cadr)\b", q_lower))
+            and bool(re.search(r"\b(commute|transit|metro|cut)\b", q_lower))
+            and bool(re.search(r"\b(or|vs|versus|compare|just)\b", q_lower))
+        ):
+            sim_res = execute_tool(
+                "simulate",
+                {
+                    "selected_intervention_ids": [
+                        "hepa_room_purifier",
+                        "family_n95_masks",
+                        "shift_ventilation_afternoon",
+                    ],
+                    "community_count": 1,
+                },
+            )
+            hepa_guide = execute_tool(
+                "lookup_guidance",
+                {"query": "hepa filter technology cadr 70-85", "top_k": 1},
+            )
+            mask_guide = execute_tool(
+                "lookup_guidance",
+                {"query": "mask n95 standards commute", "top_k": 1},
+            )
+            tool_results.extend([sim_res, hepa_guide, mask_guide])
+            citations.append(
+                {
+                    "id": "hepa-filter-technology",
+                    "title": "True HEPA Filtration Technology",
+                    "publisher": "US EPA Indoor Air Quality Division",
+                }
+            )
+            citations.append(
+                {
+                    "id": "transport-emission-comparison",
+                    "title": "Transport Mode Tailpipe Emissions",
+                    "publisher": "ARAI & CPCB",
+                }
+            )
+
+            narrative = (
+                f"Comparing home air purifiers against cutting commute exposure: "
+                f"In-room True HEPA purifiers cut closed-room particulate levels by 70-85% during sleep [hepa-filter-technology]. "
+                f"Simulating a True HEPA purifier combined with certified N95 masks and afternoon window ventilation reduces daily inhaled dose by {sim_res['dose_reduction_pct']}% "
+                f"(saving {sim_res['dose_reduction_ug']} µg of PM2.5 daily, equivalent to saving {sim_res['cigs_saved']} cigarettes/day) at a cost of ₹{sim_res['total_cost_inr']}. "
+                f"Cutting or shifting outdoor commutes avoids toxic peak morning road plumes [transport-emission-comparison], while a purifier protects you during long indoor hours."
+            )
+
+        # Myth intent: Jaggery (Strict word boundary to prevent matching 'Gurugram' or 'figure'!)
+        elif bool(re.search(r"\b(jaggery|gur|gud)\b", q_lower)) or any(
+            w in q_lower for w in ["गुड़", "गूळ"]
+        ):
             res = execute_tool(
                 "lookup_guidance", {"query": "myth jaggery gur lung detox", "top_k": 1}
             )
@@ -119,7 +236,56 @@ class MockLLM:
                     f"There is no biological mechanism for food in the stomach to extract trapped particulates from lung tissue."
                 )
 
-        elif any(w in q_lower for w in ["steam", "inhalation", "भाप", "वाफ"]):
+        # Myth intent: Plants (Corrected 10-1000 plants/m2 figure for VOCs, zero CADR for PM2.5)
+        elif bool(
+            re.search(r"\b(plant|plants|snake\s+plant|areca|money\s+plant)\b", q_lower)
+        ) or any(w in q_lower for w in ["पौधे", "पौधों", "झाडे", "झाड", "प्लांट", "स्नेक"]):
+            res = execute_tool(
+                "lookup_guidance",
+                {"query": "myth indoor plants filter smog", "top_k": 2},
+            )
+            tool_results.append(res)
+            chunk = res["results"][0]
+            citations.append(
+                {
+                    "id": chunk["source_id"],
+                    "title": chunk["title"],
+                    "publisher": chunk["publisher"],
+                }
+            )
+
+            if language == "hi":
+                narrative = (
+                    f"वैज्ञानिक शोध के अनुसार, इनडोर पौधे (जैसे स्नेक प्लांट या मनी प्लांट) हवा से "
+                    f"सूक्ष्म प्रदूषण कणों (PM2.5) को नहीं छान सकते [{chunk['source_id']}]। "
+                    f"पौधे केवल कुछ गैसों (VOCs) को धीरे-धीरे सोखते हैं। कमरे में वेंटिलेशन की बराबरी करने के लिए "
+                    f"प्रति वर्ग मीटर 10 से 1,000 पौधों की आवश्यकता होगी, और PM2.5 के लिए इनका CADR शून्य है। केवल HEPA प्यूरीफायर ही स्मॉग साफ कर सकता है।"
+                )
+            elif language == "mr":
+                narrative = (
+                    f"वैज्ञानिक अभ्यासानुसार, घरातील झाडे सूक्ष्म प्रदूषण कण (PM2.5) गाळू शकत नाहीत [{chunk['source_id']}]. "
+                    f"झाडे फक्त काही वायू (VOCs) हळूहळू शोषून घेतात. हवेच्या शुद्धीकरणासाठी दर चौरस मीटरला १० ते १,००० झाडांची गरज पडेल, "
+                    f"आणि PM2.5 कणांवर झाडांचा कोणताही परिणाम होत नाही. केवळ मेकॅनिकल हेपा प्युरिफायरच सूक्ष्म कण रोखू शकतो."
+                )
+            else:
+                if simplify_for_child:
+                    narrative = (
+                        f"Plants are awesome for looking green and making fresh oxygen during the day, "
+                        f"but they cannot catch the microscopic dirty smog specks [{chunk['source_id']}]. "
+                        f"To clean a single bedroom, you would need hundreds of plants! "
+                        f"Only a real mechanical air purifier with a HEPA filter can trap fine PM2.5 particles."
+                    )
+                else:
+                    narrative = (
+                        f"Scientific consensus confirms that indoor house plants cannot filter fine particulate smog (PM2.5) [{chunk['source_id']}]. "
+                        f"While plants absorb trace volatile organic compounds in closed lab chambers, peer-reviewed research (Cummings & Waring, 2020) demonstrated that matching typical building ventilation requires 10 to 1,000 plants per square meter. "
+                        f"Potted plants have practically zero Clean Air Delivery Rate (CADR) for fine particles. Do not rely on plants as a smog defense."
+                    )
+
+        # Myth intent: Steam
+        elif bool(re.search(r"\b(steam|inhalation)\b", q_lower)) or any(
+            w in q_lower for w in ["भाप", "वाफ"]
+        ):
             res = execute_tool(
                 "lookup_guidance", {"query": "myth steam inhalation", "top_k": 1}
             )
@@ -138,9 +304,11 @@ class MockLLM:
                 f"lodged deep inside lung alveoli [{chunk['source_id']}]. Excessive boiling steam can scald delicate airways."
             )
 
-        elif any(
-            w in q_lower
-            for w in ["diffuser", "diffusers", "aroma", "essential oil", "humidifier"]
+        # Myth intent: Diffusers
+        elif bool(
+            re.search(
+                r"\b(diffuser|diffusers|aroma|essential\s+oil|humidifier)\b", q_lower
+            )
         ):
             res = execute_tool(
                 "lookup_guidance",
@@ -161,7 +329,12 @@ class MockLLM:
                 f"In fact, vaporizing oils releases volatile organic compounds (VOCs) that react with ambient ozone to form secondary organic aerosols and ultrafine particles, worsening indoor air quality."
             )
 
-        elif any(w in q_lower for w in ["corsi", "rosenthal", "box fan", "diy"]):
+        # DIY Corsi-Rosenthal Box
+        elif bool(
+            re.search(
+                r"\b(corsi|rosenthal|box\s+fan|diy\s+purifier|diy\s+filter)\b", q_lower
+            )
+        ):
             res = execute_tool(
                 "lookup_guidance",
                 {"query": "corsi rosenthal box diy air purifier", "top_k": 2},
@@ -182,7 +355,10 @@ class MockLLM:
                 f"Seal all edges with duct tape and replace MERV 13 filters every 5 to 6 months of heavy winter smog use."
             )
 
-        elif any(w in q_lower for w in ["mask", "n95", "cloth mask", "मास्क"]):
+        # Masks
+        elif bool(re.search(r"\b(mask|masks|n95|cloth\s+mask|ffp2)\b", q_lower)) or any(
+            w in q_lower for w in ["मास्क"]
+        ):
             res = execute_tool(
                 "lookup_guidance", {"query": "mask n95 standards leakage", "top_k": 2}
             )
@@ -208,7 +384,8 @@ class MockLLM:
                     f"Certified ISI/BIS N95 respirators provide an effective 85% fit-adjusted reduction. Rotate masks every 4 hours during outdoor transit."
                 )
 
-        elif any(w in q_lower for w in ["purifier", "cadr", "size", "sizing", "hepa"]):
+        # Purifier sizing alone
+        elif bool(re.search(r"\b(purifier|cadr|sizing|room\s+volume|hepa)\b", q_lower)):
             res = execute_tool(
                 "lookup_guidance",
                 {"query": "cadr purifier sizing room volume", "top_k": 2},
@@ -229,7 +406,13 @@ class MockLLM:
                 f"Always verify True HEPA (H13 grade) and strictly avoid ionizers or ozone generators."
             )
 
-        elif any(w in q_lower for w in ["simulate", "what if", "save", "metro", "cut"]):
+        # Simulation intent (Strict word boundary, NO bare 'cut'!)
+        elif bool(
+            re.search(
+                r"\b(simulate|simulation|what\s+if|savings?|commute\s+shift)\b",
+                q_lower,
+            )
+        ):
             res = execute_tool(
                 "simulate",
                 {
@@ -251,14 +434,16 @@ class MockLLM:
 
         else:
             # Default: Current air status & routine optimization
-            air_res = execute_tool(
-                "get_air",
-                {
-                    "city": profile_data.get("city_name", "Ghaziabad")
+            # Respect city mentioned in query if any, else profile, else Ghaziabad
+            target_city = extract_city_from_query(query)
+            if not target_city:
+                target_city = (
+                    profile_data.get("city_name", "Ghaziabad")
                     if profile_data
                     else "Ghaziabad"
-                },
-            )
+                )
+
+            air_res = execute_tool("get_air", {"city": target_city})
             plan_res = execute_tool("get_day_plan", {"profile_data": profile_data})
             tool_results.extend([air_res, plan_res])
             citations.append(
@@ -302,14 +487,15 @@ class MockLLM:
                     )
 
         # -------------------------------------------------------------------
-        # 2. Enforce Numeric Traceability Guard in Code
+        # 2. Enforce Numeric Traceability Guard in Code (Fail-Closed)
         # -------------------------------------------------------------------
-        is_traceable, _untraceable = verify_numeric_traceability(narrative, tool_results)
+        user_nums = extract_numbers_from_text(query)
+        is_traceable, _untraceable = verify_numeric_traceability(
+            narrative, tool_results, user_context_numbers=user_nums
+        )
         if not is_traceable:
-            # Safe normalization: strip untraceable numbers or replace with verified engine output
-            narrative += (
-                " (Note: Verified strictly against deterministic engine results)."
-            )
+            # FAIL-CLOSED: Discard untraceable text and fall back to engine-grounded template!
+            narrative = build_failclosed_template(tool_results, language=language)
 
         # -------------------------------------------------------------------
         # 3. Stream Events and Tokens (SSE Simulation)

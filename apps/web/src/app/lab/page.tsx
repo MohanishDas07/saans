@@ -51,9 +51,9 @@ export default function HomeAirLabPage() {
       verdictEn: "MYTH: Particulate CADR is practically zero.",
       verdictHi: "भ्रम: PM2.5 कणों पर पौधों का कोई असर नहीं होता।",
       explanationEn:
-        "The popular NASA 1989 Clean Air Study measured volatile organic chemical (VOC) absorption in airtight, sealed 1m³ glass chambers over 24 hours. Subsequent peer-reviewed research (Cummings & Waring, 2020) confirmed that potted plants have near-zero Clean Air Delivery Rate (CADR) for fine particulate matter (PM2.5). You would require 10 to 100 plants per square meter to equal a single True HEPA mechanical filter. Plants are pleasant decor, not smog defense.",
+        "The popular NASA 1989 Clean Air Study measured volatile organic chemical (VOC) absorption in airtight, sealed 1m³ glass chambers over 24 hours. Subsequent peer-reviewed research (Cummings & Waring, 2020) confirmed that potted plants have near-zero Clean Air Delivery Rate (CADR) for fine particulate matter (PM2.5). Achieving the air exchange rate of typical indoor ventilation for VOCs would require 10 to 1,000 plants per square meter, while particle filtration remains negligible. Plants are pleasant decor, not smog defense.",
       explanationHi:
-        "नासा का 1989 का अध्ययन केवल बंद शीशे के बक्से में रासायनिक गैसों (VOCs) पर था। 2020 के वैज्ञानिक अध्ययनों ने साबित किया है कि पौधे हवा के धूल और धुएं (PM2.5) को नहीं छान सकते। एक HEPA प्यूरीफायर की बराबरी करने के लिए एक कमरे में 100 से ज्यादा गमलों की जरूरत होगी।",
+        "नासा का 1989 का अध्ययन केवल बंद शीशे के बक्से में रासायनिक गैसों (VOCs) पर था। 2020 के वैज्ञानिक अध्ययनों (कमिंस और वारिंग) ने साबित किया है कि पौधे हवा के महीन कणों (PM2.5) को नहीं छान सकते। गैसों के लिए भी सामान्य वेंटिलेशन की बराबरी करने के लिए प्रति वर्ग मीटर 10 से 1,000 पौधों की जरूरत होगी। केवल ट्रू HEPA प्यूरीफायर ही स्मॉग से बचा सकता है।",
       source: "Journal of Exposure Science & Environmental Epidemiology (2020)",
     },
     {

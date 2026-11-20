@@ -2,7 +2,9 @@
 
 > **A GenAI-powered web assistant helping Indian families and communities navigate severe winter smog and urban air pollution.**
 
-[![Engine & Eval Tests](https://img.shields.io/badge/All%20Tests-20%20passed%20(31%20evals)-brightgreen)](#)
+[![Engine & Eval Tests](https://img.shields.io/badge/All%20Tests-23%20passed%20(31%20evals%20%2B%206%20probes)-brightgreen)](#)
+[![Ruff](https://img.shields.io/badge/Ruff-0%20errors%20%7C%200%20warnings-brightgreen)](#)
+[![Audit](https://img.shields.io/badge/Audit-P0%20Remediated-brightgreen)](docs/AUDIT.md)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue)](#)
 [![Python](https://img.shields.io/badge/Python-3.12%2F3.13%20Typed-blue)](#)
 [![WCAG](https://img.shields.io/badge/Accessibility-WCAG%202.2%20AA-success)](#)
@@ -133,13 +135,13 @@ cd apps/web && npm run build
 ```
 
 ### Key Documentation Links
+- **[Audit Remediation Record](docs/AUDIT.md)**: Line-by-line verification and fixes across all 12 external audit items.
 - **[90-Second Hackathon Demo Script](docs/DEMO_SCRIPT.md)**: Rehearsed timeline and narrative track for the panel presentation.
 - **[AI Layer Evaluation Harness](docs/EVALUATION.md)**: 31 golden questions, medical redlines, and prompt injection defense.
 - **[Localization & Typography](docs/LOCALIZATION.md)**: EN, HI, MR dictionaries and Devanagari font rendering rules.
 - **[Architectural Decisions (ADRs)](docs/DECISIONS.md)**: ADRs 1–6 covering pure-Python engine, local storage privacy, and CPCB breakpoints.
 - **[Assumptions & Provenance](docs/ASSUMPTIONS.md)**: Literature sources for all coefficients and constants.
 - **[Accessibility Audit](docs/A11Y.md)**: WCAG 2.2 Level AA compliance verification.
-```
 
 ### Running Locally
 ```bash

@@ -210,7 +210,13 @@ export default function ChatPage() {
         </div>
 
         {/* Chat Message Window */}
-        <div className="flex-1 bg-surface border hairline border-rule p-4 overflow-y-auto min-h-[380px] max-h-[520px] flex flex-col space-y-4 mb-4 rounded-none">
+        <div
+          role="log"
+          aria-live="polite"
+          aria-atomic="false"
+          aria-label="Conversation with Saans assistant"
+          className="flex-1 bg-surface border hairline border-rule p-4 overflow-y-auto min-h-[380px] max-h-[520px] flex flex-col space-y-4 mb-4 rounded-none"
+        >
           {messages.map((m) => (
             <div
               key={m.id}
