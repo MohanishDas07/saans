@@ -228,7 +228,8 @@ export default function ChatPage() {
                 {/* Emergency Badge */}
                 {m.isEmergency && (
                   <div className="flex items-center space-x-1.5 text-xs uppercase font-mono font-bold tracking-wider text-[#7A0F2E] mb-2 pb-1 border-b border-[#7A0F2E]">
-                    <span>⚠️ EMERGENCY MEDICAL TRIAGE REFUSAL</span>
+                    <span className="inline-block w-2 h-2 bg-[#7A0F2E] rounded-full" aria-hidden="true"></span>
+                    <span>EMERGENCY MEDICAL TRIAGE REFUSAL</span>
                   </div>
                 )}
 

@@ -2,7 +2,7 @@
 
 > **A GenAI-powered web assistant helping Indian families and communities navigate severe winter smog and urban air pollution.**
 
-[![Engine Tests](https://img.shields.io/badge/Engine%20Tests-19%20passed%20(0.012s)-brightgreen)](#)
+[![Engine & Eval Tests](https://img.shields.io/badge/All%20Tests-20%20passed%20(31%20evals)-brightgreen)](#)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue)](#)
 [![Python](https://img.shields.io/badge/Python-3.12%2F3.13%20Typed-blue)](#)
 [![WCAG](https://img.shields.io/badge/Accessibility-WCAG%202.2%20AA-success)](#)
@@ -99,9 +99,11 @@ All features meet the Section 8 quality bar or remain cleanly gated behind flags
 | **Onboarding** | 🟢 Live | Core | Conversational setup, Ghaziabad demo persona, "Delete My Data" |
 | **Your Day Dashboard** | 🟢 Live | Core | Hour-by-hour timeline, Breath Budget rings, ranked recommendations |
 | **What-If Simulator** | 🟢 Live | Core | Interactive toggles, dual-lens emissions avoided, community scale |
+| **Ask Saans (AI Assistant)** | 🟢 Live | Core | Grounded streaming chat, 10-year-old child mode, medical redline intercept |
+| **Home Air Lab** | 🟢 Live | Core | CADR purifier sizing, room-by-room smog hacks, DIY Corsi-Rosenthal guide, myth-buster |
 | **Community Advisory Card** | 🟢 Live | Core | Printable / shareable RWA & school bulletin in EN, HI, MR |
 | **How Saans Works** | 🟢 Live | Core | Scientific formulas, parameter provenance, privacy disclosure |
-| **Elder Mode** | 🟢 Live | `NEXT_PUBLIC_FF_ELDER_MODE` | Large high-contrast typography and enhanced touch targets |
+| **Elder Mode** | 🟢 Live | Core | A+ toggle, large high-contrast typography and enhanced touch targets |
 | **Station IDW Ward Map** | 🟡 Milestone 4 | `NEXT_PUBLIC_FF_WARD_MAP` | Scheduled for Saturday 21 Nov |
 | **Route Comparison** | 🟡 Milestone 4 | `NEXT_PUBLIC_FF_ROUTE_COMP` | Scheduled for Saturday 21 Nov |
 | **Client-Side Weekly Report**| 🟡 Milestone 4 | `NEXT_PUBLIC_FF_WEEKLY_REPORT`| Scheduled for Saturday 21 Nov |
@@ -117,17 +119,26 @@ All features meet the Section 8 quality bar or remain cleanly gated behind flags
 
 ### One-Command Setup & Verification
 ```bash
-# 1. Run all unit and API tests (19 tests, 100% deterministic)
+# 1. Run all unit, API, and golden evaluation tests (20 suites, 31 evals, ~0.02s)
 python tests/test_all.py
 
-# 2. Run Ruff lint check
+# 2. Run Ruff lint check (0 errors, 0 warnings)
 python -m ruff check apps/api tests
 
 # 3. Export OpenAPI schema
 python scripts/export_openapi.py
 
-# 4. Build Next.js Web App
+# 4. Build Next.js Web App (11 static routes prerendered)
 cd apps/web && npm run build
+```
+
+### Key Documentation Links
+- **[90-Second Hackathon Demo Script](docs/DEMO_SCRIPT.md)**: Rehearsed timeline and narrative track for the panel presentation.
+- **[AI Layer Evaluation Harness](docs/EVALUATION.md)**: 31 golden questions, medical redlines, and prompt injection defense.
+- **[Localization & Typography](docs/LOCALIZATION.md)**: EN, HI, MR dictionaries and Devanagari font rendering rules.
+- **[Architectural Decisions (ADRs)](docs/DECISIONS.md)**: ADRs 1–6 covering pure-Python engine, local storage privacy, and CPCB breakpoints.
+- **[Assumptions & Provenance](docs/ASSUMPTIONS.md)**: Literature sources for all coefficients and constants.
+- **[Accessibility Audit](docs/A11Y.md)**: WCAG 2.2 Level AA compliance verification.
 ```
 
 ### Running Locally

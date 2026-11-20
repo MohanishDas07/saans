@@ -15,6 +15,9 @@ test-engine:
 test-api:
 	$(PYTHON) -m unittest discover -s tests/api -p "test_*.py"
 
+test-eval:
+	$(PYTHON) -m unittest discover -s tests/eval -p "test_*.py"
+
 lint:
 	$(PYTHON) -m ruff check apps/api tests
 

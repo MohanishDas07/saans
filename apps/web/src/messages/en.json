@@ -1,0 +1,70 @@
+{
+  "nav": {
+    "todays_air": "Today's Air",
+    "household": "Household",
+    "your_day": "Your Day",
+    "simulate": "What-If Simulator",
+    "chat": "Ask Saans",
+    "lab": "Home Air Lab",
+    "community": "Community Card",
+    "how_it_works": "How It Works",
+    "elder_mode": "A+ Elder Mode"
+  },
+  "landing": {
+    "subtitle": "Winter Smog & Clean Air Decision System",
+    "hero_title": "Breathe with intention during severe winter smog.",
+    "hero_desc": "Calculate your household's daily inhaled dose, shift flexible routines away from toxic morning inversion peaks, and take zero-hallucinated clean air actions.",
+    "btn_setup": "Set Up Household Profile",
+    "verdict_title": "CURRENT AIR VERDICT",
+    "offline_notice": "OFFLINE REFERENCE SNAPSHOT ACTIVE"
+  },
+  "onboarding": {
+    "title": "Household Profile Setup",
+    "subtitle": "No accounts. No server tracking. Your profile stays in browser localStorage and is transmitted transiently per calculation.",
+    "btn_load_demo": "Load Ghaziabad Demo Household (2 Adults, 1 Child, 1 Elder)",
+    "btn_clear_data": "Delete My Household Data",
+    "location_label": "Your City / District:",
+    "members_label": "Household Members & Vulnerabilities:",
+    "commute_label": "Primary Commute Mode:",
+    "cooking_label": "Primary Cooking Fuel:",
+    "home_label": "Home Envelope Type:",
+    "purifier_label": "Do you own a HEPA air purifier?",
+    "budget_label": "Smog Defense Budget Band:",
+    "btn_save": "Save Household & Calculate Day Plan"
+  },
+  "your_day": {
+    "title": "Your Day Exposure Timeline & Breath Budget",
+    "subtitle": "Hourly particulate forecast, inversion-avoiding routine shifts, and personalized inhaled dose.",
+    "budget_ring_title": "24-Hour Breath Budget",
+    "who_marker": "WHO Guideline (15 µg/m³)",
+    "india_marker": "NAAQS Standard (60 µg/m³)",
+    "scheduler_title": "Routine Optimization (Inversion-Avoidance)",
+    "interventions_title": "Ranked Interventions (Highest Exposure Saved per Rupee)",
+    "outdoor_protocol_title": "Safety Protocol: If You Must Be Outside"
+  },
+  "simulate": {
+    "title": "What-If Intervention Simulator",
+    "subtitle": "Test clean air actions before spending a rupee. Dual lens: your personal inhaled dose vs. community emissions avoided.",
+    "community_slider": "Community Scale Multiplier (Households joining this action):",
+    "cigs_disclaimer": "Berkeley Earth communication heuristic (22 µg/m³ PM2.5 ≈ 1 cigarette/day). Illustrative only, not clinical fact."
+  },
+  "chat": {
+    "title": "Ask Saans (AI Assistant)",
+    "subtitle": "Grounded in our deterministic exposure engine and peer-reviewed air science. Zero hallucinated math.",
+    "child_mode": "Explain to 10-year-old",
+    "safety_notice": "SAFETY PROTOCOL: Saans does not provide medical diagnosis. Acute distress triggers immediate emergency triage instructions (dial 112 / 102).",
+    "input_placeholder": "Ask about winter smog, N95 masks, purifier sizing, or routine optimization..."
+  },
+  "lab": {
+    "title": "Home Air Lab",
+    "subtitle": "Mechanical filtration and physical envelope management. Deterministic CADR calculator, room defenses, DIY Corsi-Rosenthal box, and myth buster.",
+    "cadr_title": "CADR Purifier Sizing Calculator",
+    "diy_title": "Build a DIY Corsi-Rosenthal Box (~₹3,500)",
+    "myths_title": "Smog Myth-Buster"
+  },
+  "community": {
+    "title": "Community & School Advisory Card",
+    "subtitle": "Generate clean, printable bulletins for Resident Welfare Associations (RWAs) and school noticeboards.",
+    "btn_print": "Print / Export PDF"
+  }
+}

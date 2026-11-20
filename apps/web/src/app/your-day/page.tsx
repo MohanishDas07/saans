@@ -228,8 +228,8 @@ export default function YourDayPage() {
           {(plan?.outdoor_worker_advice_en || outdoorModeOverride) && (
             <section className="bg-amber-50 border-2 border-amber-600 p-6 space-y-3 text-amber-950">
               <div className="flex items-center justify-between border-b border-amber-200 pb-2">
-                <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center space-x-1">
-                  <span>🚨</span>
+                <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center space-x-1.5">
+                  <span className="inline-block w-2 h-2 bg-amber-600 rounded-full" aria-hidden="true"></span>
                   <span>Safety Protocol: If You Must Be Outside</span>
                 </span>
                 <span className="font-mono text-2xs px-2 py-0.5 bg-amber-200 border border-amber-400">
